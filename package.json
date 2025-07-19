@@ -1,0 +1,29 @@
+{
+  "name": "@cygnus-wealth/evm-integration",
+  "version": "0.1.0",
+  "description": "Read-only EVM integration for CygnusWealth portfolio aggregation",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "evm",
+    "web3",
+    "cygnus-wealth"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^24.0.15",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "ethers": "^6.15.0",
+    "viem": "^2.32.1",
+    "wagmi": "^2.16.0"
+  }
+}
