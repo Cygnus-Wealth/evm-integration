@@ -6,8 +6,9 @@
     "esModuleInterop": true,
     "declaration": true,
     "outDir": "./dist",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "moduleResolution": "nodenext"  // Add this line
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "vitest.config.ts"],  // Add vitest.config.ts if not included
   "exclude": ["node_modules", "dist"]
 }
