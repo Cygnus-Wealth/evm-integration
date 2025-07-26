@@ -1,5 +1,14 @@
-export interface EvmAsset {
-    token: string;
-    balance: bigint;
-    value?: number; // Optional USD equivalent
-}
+// Re-export types from data-models that are used in this library
+export type { 
+    Asset, 
+    Balance, 
+    Transaction,
+    Price,
+    Metadata 
+} from '@cygnus-wealth/data-models';
+
+export { 
+    AssetType, 
+    Chain, 
+    TransactionType 
+} from '@cygnus-wealth/data-models';
