@@ -7,6 +7,11 @@ export * from './hooks/useEvmConnect';
 
 // Providers
 export * from './providers/WebSocketProvider';
+export { EnhancedWebSocketProvider, ConnectionState } from './providers/EnhancedWebSocketProvider';
+export type { 
+  EnhancedWebSocketProviderOptions, 
+  ChainConfig as EnhancedChainConfig 
+} from './providers/EnhancedWebSocketProvider';
 
 // Services
 export * from './services/ConnectionManager';

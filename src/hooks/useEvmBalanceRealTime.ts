@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Address } from 'viem';
 import { Balance } from '@cygnus-wealth/data-models';
-import { WebSocketProvider } from '../providers/WebSocketProvider';
+import { EnhancedWebSocketProvider, ConnectionState } from '../providers/EnhancedWebSocketProvider';
 import { mapEvmBalanceToBalance } from '../utils/mappers';
 import { GetBalanceReturnType } from 'wagmi/actions';
 
@@ -9,12 +9,15 @@ export interface UseEvmBalanceRealTimeOptions {
   enabled?: boolean;
   pollInterval?: number;
   autoConnect?: boolean;
+  preferWebSocket?: boolean;
 }
 
 export interface UseEvmBalanceRealTimeResult {
   balance: Balance | null;
   isLoading: boolean;
   isConnected: boolean;
+  isWebSocketConnected: boolean;
+  connectionState: ConnectionState;
   error: Error | null;
   refetch: () => void;
   connect: () => void;
@@ -29,22 +32,27 @@ export const useEvmBalanceRealTime = (
   const {
     enabled = true,
     autoConnect = true,
+    pollInterval,
+    preferWebSocket = true,
   } = options;
 
   const [balance, setBalance] = useState<Balance | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
+  const [connectionState, setConnectionState] = useState<ConnectionState>(ConnectionState.DISCONNECTED);
   const [error, setError] = useState<Error | null>(null);
 
-  const wsProviderRef = useRef<WebSocketProvider | null>(null);
+  const wsProviderRef = useRef<EnhancedWebSocketProvider | null>(null);
   const unsubscribeRef = useRef<(() => void) | null>(null);
 
   const initializeProvider = () => {
     if (!wsProviderRef.current) {
-      wsProviderRef.current = new WebSocketProvider({
+      wsProviderRef.current = new EnhancedWebSocketProvider({
         autoReconnect: true,
         reconnectInterval: 5000,
         maxReconnectAttempts: 5,
+        pollInterval: pollInterval || 12000,
+        preferWebSocket,
       });
     }
     return wsProviderRef.current;
@@ -60,6 +68,10 @@ export const useEvmBalanceRealTime = (
       const provider = initializeProvider();
       await provider.connect(chainId);
       setIsConnected(true);
+      
+      // Update connection state
+      const state = provider.getConnectionState(chainId);
+      setConnectionState(state);
 
       // Subscribe to balance updates
       const unsubscribe = await provider.subscribeToBalance(
@@ -80,7 +92,12 @@ export const useEvmBalanceRealTime = (
           const mappedBalance = mapEvmBalanceToBalance(balanceData, address, chainId);
           setBalance(mappedBalance);
           setIsLoading(false);
-        }
+          
+          // Update connection state on each update
+          const currentState = provider.getConnectionState(chainId);
+          setConnectionState(currentState);
+        },
+        { pollInterval }
       );
 
       unsubscribeRef.current = unsubscribe;
@@ -100,6 +117,7 @@ export const useEvmBalanceRealTime = (
     if (wsProviderRef.current) {
       wsProviderRef.current.disconnect(chainId);
       setIsConnected(false);
+      setConnectionState(ConnectionState.DISCONNECTED);
     }
   };
 
@@ -131,10 +149,14 @@ export const useEvmBalanceRealTime = (
     };
   }, []);
 
+  const isWebSocketConnected = connectionState === ConnectionState.CONNECTED_WS;
+
   return {
     balance,
     isLoading,
     isConnected,
+    isWebSocketConnected,
+    connectionState,
     error,
     refetch,
     connect,

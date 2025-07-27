@@ -10,6 +10,8 @@ A TypeScript library providing React hooks for read-only EVM blockchain interact
 - 📦 **TypeScript**: Full type safety with strict mode enabled
 - ⚡ **Lightweight**: Minimal dependencies with tree-shaking support
 - 🧪 **Well-tested**: Comprehensive test coverage with Vitest
+- 🚀 **WebSocket-First**: Real-time data via WebSocket with automatic HTTP polling fallback
+- 🔄 **Smart Fallback**: Seamlessly switches between WebSocket and HTTP based on availability
 
 ## Installation
 
@@ -41,12 +43,53 @@ function Portfolio() {
 
   return (
     <div>
-      <p>Balance: {balance?.formatted} ETH</p>
+      <p>Balance: {balance?.value?.amount} {balance?.asset.symbol}</p>
       <p>Transactions: {transactions?.length || 0}</p>
     </div>
   );
 }
 ```
+
+## Real-time Data with WebSocket Priority
+
+The library prioritizes WebSocket connections for real-time data and automatically falls back to HTTP polling when WebSocket is unavailable:
+
+```typescript
+import { useEvmBalanceRealTime, ConnectionState } from '@cygnuswealth/evm-integration';
+
+function RealTimeBalance() {
+  const { 
+    balance, 
+    isWebSocketConnected,
+    connectionState,
+    error 
+  } = useEvmBalanceRealTime(
+    '0x742d35Cc6634C0532925a3b844Bc9e7595f1234',
+    1, // Ethereum mainnet
+    {
+      preferWebSocket: true,    // Default: true
+      pollInterval: 15000,      // Fallback polling interval in ms
+      autoConnect: true         // Auto-connect on mount
+    }
+  );
+
+  return (
+    <div>
+      <p>Connection: {connectionState}</p>
+      <p>WebSocket Active: {isWebSocketConnected ? 'Yes' : 'No (Using HTTP polling)'}</p>
+      <p>Balance: {balance?.value?.amount} {balance?.asset.symbol}</p>
+    </div>
+  );
+}
+```
+
+### Connection States
+
+- `DISCONNECTED` - Not connected
+- `CONNECTING` - Establishing connection
+- `CONNECTED_WS` - Connected via WebSocket (real-time)
+- `CONNECTED_HTTP` - Connected via HTTP (polling fallback)
+- `ERROR` - Connection error
 
 ## Available Hooks
 

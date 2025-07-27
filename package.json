@@ -1,6 +1,6 @@
 {
   "name": "@cygnus-wealth/evm-integration",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Read-only EVM integration for CygnusWealth portfolio aggregation",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -8,6 +8,9 @@
     "build": "tsc",
     "test": "vitest",
     "test:ui": "vitest --ui",
+    "test:e2e": "vitest run src/e2e/balanceVerification.test.tsx",
+    "verify:balance": "tsx src/e2e/verifyBalance.ts",
+    "verify:websocket": "tsx src/e2e/websocketVerification.ts",
     "prepublishOnly": "npm run build"
   },
   "keywords": [
@@ -30,6 +33,7 @@
     "jsdom": "^26.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "tsx": "^4.7.0",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4"
   },

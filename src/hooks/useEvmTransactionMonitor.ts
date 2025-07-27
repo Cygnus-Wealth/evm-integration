@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Address, Hash } from 'viem';
 import { Transaction } from '@cygnus-wealth/data-models';
-import { WebSocketProvider } from '../providers/WebSocketProvider';
+import { EnhancedWebSocketProvider, ConnectionState } from '../providers/EnhancedWebSocketProvider';
 import { mapEvmTransaction } from '../utils/mappers';
 
 export interface UseEvmTransactionMonitorOptions {
@@ -10,12 +10,16 @@ export interface UseEvmTransactionMonitorOptions {
   includeOutgoing?: boolean;
   autoConnect?: boolean;
   accountId?: string; // Optional account ID for the Transaction model
+  pollInterval?: number;
+  preferWebSocket?: boolean;
 }
 
 export interface UseEvmTransactionMonitorResult {
   transactions: Transaction[];
   isLoading: boolean;
   isConnected: boolean;
+  isWebSocketConnected: boolean;
+  connectionState: ConnectionState;
   error: Error | null;
   connect: () => void;
   disconnect: () => void;
@@ -33,23 +37,28 @@ export const useEvmTransactionMonitor = (
     includeOutgoing = true,
     autoConnect = true,
     accountId = address || 'unknown',
+    pollInterval,
+    preferWebSocket = true,
   } = options;
 
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
+  const [connectionState, setConnectionState] = useState<ConnectionState>(ConnectionState.DISCONNECTED);
   const [error, setError] = useState<Error | null>(null);
 
-  const wsProviderRef = useRef<WebSocketProvider | null>(null);
+  const wsProviderRef = useRef<EnhancedWebSocketProvider | null>(null);
   const unsubscribeRef = useRef<(() => void) | null>(null);
   const seenTransactionsRef = useRef<Set<Hash>>(new Set());
 
   const initializeProvider = () => {
     if (!wsProviderRef.current) {
-      wsProviderRef.current = new WebSocketProvider({
+      wsProviderRef.current = new EnhancedWebSocketProvider({
         autoReconnect: true,
         reconnectInterval: 5000,
         maxReconnectAttempts: 5,
+        pollInterval: pollInterval || 12000,
+        preferWebSocket,
       });
     }
     return wsProviderRef.current;
@@ -103,12 +112,17 @@ export const useEvmTransactionMonitor = (
       const provider = initializeProvider();
       await provider.connect(chainId);
       setIsConnected(true);
+      
+      // Update connection state
+      const state = provider.getConnectionState(chainId);
+      setConnectionState(state);
 
       // Subscribe to transaction updates
       const unsubscribe = await provider.subscribeToTransactions(
         address,
         chainId,
-        addTransaction
+        addTransaction,
+        { pollInterval }
       );
 
       unsubscribeRef.current = unsubscribe;
@@ -129,6 +143,7 @@ export const useEvmTransactionMonitor = (
     if (wsProviderRef.current) {
       wsProviderRef.current.disconnect(chainId);
       setIsConnected(false);
+      setConnectionState(ConnectionState.DISCONNECTED);
     }
   };
 
@@ -156,10 +171,14 @@ export const useEvmTransactionMonitor = (
     };
   }, []);
 
+  const isWebSocketConnected = connectionState === ConnectionState.CONNECTED_WS;
+
   return {
     transactions,
     isLoading,
     isConnected,
+    isWebSocketConnected,
+    connectionState,
     error,
     connect,
     disconnect,
