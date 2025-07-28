@@ -1,6 +1,6 @@
 {
   "name": "@cygnus-wealth/evm-integration",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Read-only EVM integration for CygnusWealth portfolio aggregation",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -18,7 +18,7 @@
     "web3",
     "cygnus-wealth"
   ],
-  "author": "Your Name",
+  "author": "Jacob Boswell",
   "license": "MIT",
   "devDependencies": {
     "@testing-library/dom": "^10.4.0",

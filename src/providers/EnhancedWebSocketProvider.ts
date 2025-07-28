@@ -313,6 +313,117 @@ export class EnhancedWebSocketProvider {
     this.pollingIntervals.set(key, interval);
   }
 
+  public async subscribeToTokenBalance(
+    address: Address,
+    tokenAddress: Address,
+    chainId: number,
+    callback: (balance: bigint) => void,
+    options: SubscriptionOptions = {}
+  ): Promise<() => void> {
+    const client = await this.connect(chainId);
+    const state = this.connectionStates.get(chainId);
+    const subscriptionKey = `token-balance-${chainId}-${address}-${tokenAddress}`;
+
+    // Clean up any existing subscription
+    this.unsubscribeByKey(subscriptionKey);
+
+    if (state === ConnectionState.CONNECTED_WS) {
+      // Use WebSocket subscription
+      try {
+        const unsubscribe = await client.watchBlockNumber({
+          onBlockNumber: async () => {
+            try {
+              const balance = await client.readContract({
+                address: tokenAddress,
+                abi: [
+                  {
+                    name: 'balanceOf',
+                    type: 'function',
+                    stateMutability: 'view',
+                    inputs: [{ name: 'owner', type: 'address' }],
+                    outputs: [{ name: 'balance', type: 'uint256' }],
+                  },
+                ],
+                functionName: 'balanceOf',
+                args: [address],
+              }) as bigint;
+              callback(balance);
+            } catch (error) {
+              console.error('Error fetching token balance via WebSocket:', error);
+              // Fallback to polling on error
+              await this.fallbackToPolling(chainId);
+              this.setupTokenPollingSubscription(subscriptionKey, client, address, tokenAddress, callback, options);
+            }
+          },
+        });
+
+        this.wsUnsubscribes.set(subscriptionKey, unsubscribe);
+        return () => this.unsubscribeByKey(subscriptionKey);
+      } catch (error) {
+        console.error('WebSocket subscription failed, falling back to polling:', error);
+        await this.fallbackToPolling(chainId);
+      }
+    }
+
+    // Use polling for HTTP connections or as fallback
+    this.setupTokenPollingSubscription(subscriptionKey, client, address, tokenAddress, callback, options);
+    return () => this.unsubscribeByKey(subscriptionKey);
+  }
+
+  private setupTokenPollingSubscription(
+    key: string,
+    client: PublicClient,
+    address: Address,
+    tokenAddress: Address,
+    callback: (balance: bigint) => void,
+    options: SubscriptionOptions
+  ): void {
+    const pollInterval = options.pollInterval || this.options.pollInterval;
+
+    // Initial fetch
+    client.readContract({
+      address: tokenAddress,
+      abi: [
+        {
+          name: 'balanceOf',
+          type: 'function',
+          stateMutability: 'view',
+          inputs: [{ name: 'owner', type: 'address' }],
+          outputs: [{ name: 'balance', type: 'uint256' }],
+        },
+      ],
+      functionName: 'balanceOf',
+      args: [address],
+    })
+      .then(balance => callback(balance as bigint))
+      .catch(error => console.error('Error fetching token balance:', error));
+
+    // Set up polling
+    const interval = setInterval(async () => {
+      try {
+        const balance = await client.readContract({
+          address: tokenAddress,
+          abi: [
+            {
+              name: 'balanceOf',
+              type: 'function',
+              stateMutability: 'view',
+              inputs: [{ name: 'owner', type: 'address' }],
+              outputs: [{ name: 'balance', type: 'uint256' }],
+            },
+          ],
+          functionName: 'balanceOf',
+          args: [address],
+        }) as bigint;
+        callback(balance);
+      } catch (error) {
+        console.error('Error polling token balance:', error);
+      }
+    }, pollInterval);
+
+    this.pollingIntervals.set(key, interval);
+  }
+
   public async subscribeToTransactions(
     address: Address,
     chainId: number,

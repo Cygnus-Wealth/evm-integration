@@ -1,6 +1,9 @@
 // Hooks
 export * from './hooks/useEvmBalance';
 export * from './hooks/useEvmBalanceRealTime';
+export * from './hooks/useEvmTokenBalance';
+export * from './hooks/useEvmTokenBalances';
+export * from './hooks/useEvmTokenBalanceRealTime';
 export * from './hooks/useEvmTransactionMonitor';
 export * from './hooks/useEvmTransactions';
 export * from './hooks/useEvmConnect';
