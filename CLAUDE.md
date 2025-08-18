@@ -65,3 +65,42 @@ All hooks follow wagmi patterns and accept:
 - Compiled to `dist/` directory
 - Includes TypeScript declarations (.d.ts files)
 - Main entry: `dist/index.js`
+
+## DDD Architecture Agent Selection Guide
+
+When working on CygnusWealth, use the appropriate specialized agent based on the architectural level:
+
+### ddd-enterprise-architect
+Use for strategic domain decomposition and high-level architecture:
+- Defining bounded contexts between CEX, DEX, and wallet integrations
+- Establishing communication patterns between portfolio aggregation domains
+- Setting enterprise-wide standards for decentralized architecture
+- Planning migration from monolithic to modular repository structure
+
+### ddd-domain-architect
+Use for domain-specific implementations within bounded contexts:
+- Designing the EVM integration module structure
+- Defining aggregates for portfolio data and wallet connections
+- Establishing contracts between chain-specific repositories
+- Translating decentralization requirements into domain models
+
+### ddd-system-architect
+Use for single repository/system architecture:
+- Module decomposition within the EVM integration library
+- Library selection for Web3 interactions (wagmi vs viem vs ethers)
+- E2E test planning for wallet connection flows
+- Ensuring client-side sovereignty in system design
+
+### ddd-unit-architect
+Use for granular code-level architecture:
+- Designing React hook structures for EVM interactions
+- Creating TypeScript interfaces for blockchain data models
+- Defining unit test specifications for wallet utilities
+- Structuring encryption modules with Web Crypto API
+
+### ddd-software-engineer
+Use for implementing architectural designs:
+- Writing React hooks based on unit architecture specs
+- Implementing Vitest unit tests for EVM components
+- Creating value objects for Ethereum addresses and tokens
+- Building repository patterns for blockchain data access

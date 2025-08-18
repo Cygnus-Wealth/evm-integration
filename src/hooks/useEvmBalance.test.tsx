@@ -10,7 +10,17 @@ vi.mock('wagmi', async (importOriginal) => {
     const actual = await importOriginal<typeof import('wagmi')>();
     return {
         ...actual,
-        useBalance: vi.fn(() => ({ data: { value: BigInt(1000) }, isSuccess: true })),
+        useBalance: vi.fn(() => ({ 
+            data: { 
+                value: BigInt(1000),
+                decimals: 18,
+                symbol: 'ETH',
+                formatted: '0.000000000000001'
+            }, 
+            isLoading: false,
+            error: null,
+            refetch: vi.fn()
+        })),
     };
 });
 
@@ -23,7 +33,10 @@ const mockConfig = createConfig({
 const queryClient = new QueryClient();
 
 test('fetches balance successfully', async () => {
-    const { result } = renderHook(() => useEvmBalance('0x1234567890123456789012345678901234567890'), {
+    const { result } = renderHook(() => useEvmBalance({ 
+        address: '0x1234567890123456789012345678901234567890' as `0x${string}`,
+        chainId: 1
+    }), {
         wrapper: ({ children }) => (
             <WagmiProvider config={mockConfig}>
                 <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
@@ -31,6 +44,7 @@ test('fetches balance successfully', async () => {
         ),
     });
 
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(result.current.data?.value).toBe(BigInt(1000));
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    expect(result.current.balance).toBeDefined();
+    expect(result.current.balance?.amount).toBe('1000');
 });
