@@ -28,6 +28,8 @@ Primary goals include secure, effortless multi-chain tracking with high decentra
 
 This repository contains the read-only EVM integration library for CygnusWealth portfolio aggregation. It provides React hooks for interacting with Ethereum and other EVM-compatible blockchains using wagmi, viem, and ethers.
 
+**IMPORTANT: For detailed architecture information, see [ARCHITECTURE.md](./ARCHITECTURE.md)**. All DDD agents should reference that document for domain, system, and unit architecture details.
+
 ## Development Commands
 
 - **Build**: `npm run build` - Compiles TypeScript to dist/
@@ -37,11 +39,21 @@ This repository contains the read-only EVM integration library for CygnusWealth 
 
 ## Architecture
 
-### Core Structure
+### Current State (Post-Refactoring)
+The codebase now follows Domain-Driven Design (DDD) principles with clear separation of concerns:
+
+- **Domain Layer** (`src/domain/`) - Core business logic, aggregates, value objects
+- **Application Layer** (`src/application/`) - Use cases and services
+- **Infrastructure Layer** (`src/infrastructure/`) - External integrations, repositories
+- **Presentation Layer** (`src/hooks/`) - React hooks for UI integration
+
+### Legacy Structure (Preserved for Backward Compatibility)
 - `src/hooks/` - React hooks for EVM interactions (useEvmBalance, useEvmConnect, useEvmTransactions)
 - `src/types/` - TypeScript type definitions (EvmAsset interface)
 - `src/utils/` - Utilities including RPC client configuration
 - `src/index.ts` - Main entry point, exports all hooks
+
+**Note**: Both architectures coexist. Legacy hooks remain unchanged for backward compatibility while new DDD-based components provide enhanced functionality.
 
 ### Key Technologies
 - **wagmi**: Primary Web3 React hooks library
