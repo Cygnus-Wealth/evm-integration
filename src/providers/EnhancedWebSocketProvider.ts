@@ -8,7 +8,7 @@ import {
   Chain,
   fallback
 } from 'viem';
-import { mainnet, polygon, arbitrum, optimism, bsc, avalanche } from 'viem/chains';
+import { mainnet, polygon, arbitrum, optimism, bsc, avalanche, base } from 'viem/chains';
 import { ConnectionManager } from '../services/ConnectionManager';
 
 export interface ChainConfig {
@@ -56,9 +56,8 @@ export class EnhancedWebSocketProvider {
       name: 'mainnet',
       chain: mainnet,
       wsUrls: [
-        'wss://ethereum-rpc.publicnode.com',
         'wss://eth-mainnet.public.blastapi.io',
-        'wss://rpc.ankr.com/eth/ws'
+        'wss://ethereum.blockpi.network/v1/ws/public'
       ],
       httpUrls: [
         'https://ethereum-rpc.publicnode.com',
@@ -71,9 +70,8 @@ export class EnhancedWebSocketProvider {
       name: 'polygon',
       chain: polygon,
       wsUrls: [
-        'wss://polygon-bor-rpc.publicnode.com',
         'wss://polygon-mainnet.public.blastapi.io',
-        'wss://rpc.ankr.com/polygon/ws'
+        'wss://polygon.blockpi.network/v1/ws/public'
       ],
       httpUrls: [
         'https://polygon-bor-rpc.publicnode.com',
@@ -86,13 +84,12 @@ export class EnhancedWebSocketProvider {
       name: 'arbitrum',
       chain: arbitrum,
       wsUrls: [
-        'wss://arbitrum-one-rpc.publicnode.com',
-        'wss://arb-mainnet.public.blastapi.io',
-        'wss://rpc.ankr.com/arbitrum/ws'
+        // Note: No reliable free WebSocket endpoints for Arbitrum currently
+        // Will fallback to HTTP polling
       ],
       httpUrls: [
-        'https://arbitrum-one-rpc.publicnode.com',
         'https://arb1.arbitrum.io/rpc',
+        'https://arbitrum-one-rpc.publicnode.com',
         'https://rpc.ankr.com/arbitrum'
       ]
     },
@@ -101,14 +98,27 @@ export class EnhancedWebSocketProvider {
       name: 'optimism',
       chain: optimism,
       wsUrls: [
-        'wss://optimism-rpc.publicnode.com',
         'wss://optimism-mainnet.public.blastapi.io',
-        'wss://rpc.ankr.com/optimism/ws'
+        'wss://optimism.blockpi.network/v1/ws/public'
       ],
       httpUrls: [
         'https://optimism-rpc.publicnode.com',
         'https://mainnet.optimism.io',
         'https://rpc.ankr.com/optimism'
+      ]
+    },
+    { 
+      chainId: 8453, 
+      name: 'base',
+      chain: base,
+      wsUrls: [
+        // Note: No reliable free WebSocket endpoints for Base currently
+        // Will fallback to HTTP polling
+      ],
+      httpUrls: [
+        'https://mainnet.base.org',
+        'https://base-rpc.publicnode.com',
+        'https://rpc.ankr.com/base'
       ]
     },
     { 

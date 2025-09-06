@@ -1,31 +1,33 @@
-// Hooks - Public API (preserved for backward compatibility)
-export * from './hooks/useEvmBalance';
-export * from './hooks/useEvmBalanceRealTime';
-export * from './hooks/useEvmTokenBalance';
-export * from './hooks/useEvmTokenBalances';
-export * from './hooks/useEvmTokenBalanceRealTime';
-export * from './hooks/useEvmTransactionMonitor';
-export * from './hooks/useEvmTransactions';
-export * from './hooks/useEvmConnect';
+/**
+ * @cygnus-wealth/evm-integration
+ * 
+ * A TypeScript library for standardized read-only access to EVM-compatible blockchains.
+ * Returns all data in @cygnus-wealth/data-models format.
+ * 
+ * This is a framework-agnostic data access layer.
+ */
 
-// New DDD-based hooks
-export { usePortfolio, usePortfolioRealTime } from './hooks/usePortfolio';
+// ============================================================================
+// CORE PUBLIC API
+// ============================================================================
 
-// Providers - Public API (preserved for backward compatibility)
-export * from './providers/WebSocketProvider';
-export { EnhancedWebSocketProvider, ConnectionState } from './providers/EnhancedWebSocketProvider';
+// Chain Registry - Primary API for multi-chain support
+export { ChainRegistry, defaultRegistry } from './registry/ChainRegistry';
+
+// Chain Adapter - Direct adapter usage
+export { EvmChainAdapter } from './adapters/EvmChainAdapter';
+
+// Type Definitions
 export type { 
-  EnhancedWebSocketProviderOptions, 
-  ChainConfig as EnhancedChainConfig 
-} from './providers/EnhancedWebSocketProvider';
+  IChainAdapter, 
+  ChainInfo, 
+  TokenConfig, 
+  TransactionOptions, 
+  Unsubscribe 
+} from './types/IChainAdapter';
+export type { ChainConfig } from './types/ChainConfig';
 
-// Services - Public API (preserved for backward compatibility)
-export * from './services/ConnectionManager';
-
-// Types - Re-export from data-models
-export * from './types';
-
-// Utils - Public API (preserved for backward compatibility)
+// Utility Exports
 export { 
   mapChainIdToChain, 
   mapChainToChainId,
@@ -34,48 +36,39 @@ export {
   mapEvmTransaction
 } from './utils/mappers';
 
-// Domain layer exports (new DDD architecture)
-export { WalletAddress, InvalidAddressError } from './domain/blockchain/Address';
-export { EvmChain, UnsupportedChainError } from './domain/blockchain/Chain';
-export { Balance } from './domain/portfolio/Balance';
-export { Portfolio, type PortfolioSnapshot } from './domain/portfolio/Portfolio';
-export type { IEvmRepository } from './domain/IEvmRepository';
-export { RepositoryError, RpcUnavailableError, InsufficientDataError } from './domain/IEvmRepository';
+// Chain Configurations (for convenience)
+import ethereumConfig from './registry/configs/ethereum.json';
+import polygonConfig from './registry/configs/polygon.json';
+import arbitrumConfig from './registry/configs/arbitrum.json';
+import optimismConfig from './registry/configs/optimism.json';
+import baseConfig from './registry/configs/base.json';
 
-// Application layer exports
-export { PortfolioService } from './application/services/PortfolioService';
+export const chains = {
+  ethereum: ethereumConfig,
+  polygon: polygonConfig,
+  arbitrum: arbitrumConfig,
+  optimism: optimismConfig,
+  base: baseConfig,
+};
 
-// Infrastructure layer exports
-export { EvmRepository } from './infrastructure/blockchain/EvmRepository';
-export { ConfigurationService } from './infrastructure/config/ConfigurationService';
+// ============================================================================
+// PROVIDERS (Advanced Usage)
+// ============================================================================
+
+// WebSocket providers for real-time connections
+export * from './providers/WebSocketProvider';
+export { 
+  EnhancedWebSocketProvider, 
+  ConnectionState 
+} from './providers/EnhancedWebSocketProvider';
 export type { 
-  EvmIntegrationConfig, 
-  ChainConfig, 
-  RpcConfig 
-} from './infrastructure/config/ConfigurationService';
+  EnhancedWebSocketProviderOptions, 
+  ChainConfig as EnhancedChainConfig 
+} from './providers/EnhancedWebSocketProvider';
 
-// Branded types for improved type safety
-export {
-  type Brand,
-  type ChainId,
-  type BlockNumber,
-  type TransactionHash,
-  type Wei,
-  type Timestamp,
-  type TokenAddress,
-  type AssetId,
-  toChainId,
-  toBlockNumber,
-  toTransactionHash,
-  toWei,
-  toTimestamp,
-  toTokenAddress,
-  toAssetId,
-  isChainId,
-  isBlockNumber,
-  isTransactionHash,
-  isWei,
-  isTimestamp,
-  isTokenAddress,
-  isAssetId
-} from './domain/types/BrandedTypes';
+// ============================================================================
+// TYPE RE-EXPORTS
+// ============================================================================
+
+// Re-export types from the types directory
+export * from './types';

@@ -9,7 +9,8 @@
     "rootDir": "./src",
     "moduleResolution": "nodenext",
     "jsx": "react-jsx",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "resolveJsonModule": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "**/*.test.*"]

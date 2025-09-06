@@ -1,5 +1,5 @@
 import { createPublicClient, webSocket, PublicClient, Address } from 'viem';
-import { mainnet, polygon, arbitrum, optimism } from 'viem/chains';
+import { mainnet, polygon, arbitrum, optimism, base } from 'viem/chains';
 
 export interface ChainConfig {
   chainId: number;
@@ -20,10 +20,11 @@ export class WebSocketProvider {
   private options: Required<WebSocketProviderOptions>;
 
   private readonly chainConfigs: ChainConfig[] = [
-    { chainId: 1, name: 'mainnet', wsUrl: 'wss://eth-mainnet.ws.alchemyapi.io/v2/your-api-key' },
-    { chainId: 137, name: 'polygon', wsUrl: 'wss://polygon-mainnet.ws.alchemyapi.io/v2/your-api-key' },
-    { chainId: 42161, name: 'arbitrum', wsUrl: 'wss://arb-mainnet.ws.alchemyapi.io/v2/your-api-key' },
-    { chainId: 10, name: 'optimism', wsUrl: 'wss://opt-mainnet.ws.alchemyapi.io/v2/your-api-key' },
+    { chainId: 1, name: 'mainnet', wsUrl: 'wss://eth-mainnet.public.blastapi.io' },
+    { chainId: 137, name: 'polygon', wsUrl: 'wss://polygon-mainnet.public.blastapi.io' },
+    { chainId: 42161, name: 'arbitrum', wsUrl: 'wss://arbitrum-one.public.blastapi.io' },
+    { chainId: 10, name: 'optimism', wsUrl: 'wss://optimism-mainnet.public.blastapi.io' },
+    { chainId: 8453, name: 'base', wsUrl: 'wss://base.publicnode.com' }, // Note: May not actually support WebSocket
   ];
 
   constructor(options: WebSocketProviderOptions = {}) {
@@ -131,6 +132,8 @@ export class WebSocketProvider {
         return arbitrum;
       case 10:
         return optimism;
+      case 8453:
+        return base;
       default:
         throw new Error(`Unsupported chain ID: ${chainId}`);
     }

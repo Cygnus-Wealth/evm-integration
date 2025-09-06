@@ -1,6 +1,15 @@
 import { Asset, Balance, Transaction, AssetType, Chain, TransactionType } from '@cygnus-wealth/data-models';
 import { Address } from 'viem';
-import type { GetBalanceReturnType } from 'wagmi/actions';
+
+/**
+ * Balance data structure returned from blockchain queries
+ */
+interface BalanceData {
+    value: bigint;
+    symbol: string;
+    decimals: number;
+    formatted?: string;
+}
 
 /**
  * Maps chain ID to Chain enum
@@ -47,10 +56,10 @@ export function mapChainToChainId(chain: Chain): number {
 }
 
 /**
- * Maps wagmi balance data to standard Balance interface
+ * Maps EVM balance data to standard Balance interface
  */
 export function mapEvmBalanceToBalance(
-    balanceData: GetBalanceReturnType,
+    balanceData: BalanceData,
     address: Address,
     chainId: number
 ): Balance {

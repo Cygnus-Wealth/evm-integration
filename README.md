@@ -1,250 +1,213 @@
-# CygnusWealth EVM Integration
+# @cygnus-wealth/evm-integration
 
-A TypeScript library providing React hooks for read-only EVM blockchain interactions, built for the CygnusWealth decentralized portfolio aggregation platform.
+Framework-agnostic TypeScript library for read-only EVM blockchain data access. Returns all data in standardized `@cygnus-wealth/data-models` format.
 
 ## Features
 
-- 🔗 **Multi-chain Support**: Works with Ethereum and all EVM-compatible blockchains
-- 🪝 **React Hooks**: Simple, declarative hooks for balance queries, transaction monitoring, and wallet connections
-- 🔒 **Read-only**: Security-first design with no transaction signing or private key handling
-- 📦 **TypeScript**: Full type safety with strict mode enabled
-- ⚡ **Lightweight**: Minimal dependencies with tree-shaking support
-- 🧪 **Well-tested**: Comprehensive test coverage with Vitest
-- 🚀 **WebSocket-First**: Real-time data via WebSocket with automatic HTTP polling fallback
-- 🔄 **Smart Fallback**: Seamlessly switches between WebSocket and HTTP based on availability
+- 🔌 **Multi-chain Support** - Ethereum, Polygon, Arbitrum, Optimism, Base, and more
+- 📊 **Standardized Data** - All responses use `@cygnus-wealth/data-models` types
+- 🚀 **Framework Agnostic** - Use with React, Vue, Node.js, or vanilla JavaScript
+- 🔄 **Real-time Updates** - WebSocket support for live balance monitoring
+- 🛡️ **Read-only** - Safe, no transaction signing or private keys
+- ⚡ **TypeScript First** - Full type safety and IntelliSense support
 
 ## Installation
 
 ```bash
-npm install @cygnuswealth/evm-integration
+npm install @cygnus-wealth/evm-integration
 ```
-
-## Dependencies
-
-This library uses the `@cygnus-wealth/data-models` package for standardized data structures across the CygnusWealth ecosystem. All hooks return data in the standard formats defined by the data-models library.
 
 ## Quick Start
 
 ```typescript
-import { useEvmBalance, useEvmTransactions } from '@cygnuswealth/evm-integration';
+import { defaultRegistry } from '@cygnus-wealth/evm-integration';
 
-function Portfolio() {
-  const { balance, isLoading } = useEvmBalance({
-    address: '0x742d35Cc6634C0532925a3b844Bc9e7595f1234',
-    chainId: 1 // Ethereum mainnet
-  });
+// Get adapter for Ethereum mainnet
+const adapter = defaultRegistry.getAdapter(1);
 
-  const { transactions } = useEvmTransactions({
-    address: '0x742d35Cc6634C0532925a3b844Bc9e7595f1234',
-    chainId: 1
-  });
-
-  if (isLoading) return <div>Loading...</div>;
-
-  return (
-    <div>
-      <p>Balance: {balance?.value?.amount} {balance?.asset.symbol}</p>
-      <p>Transactions: {transactions?.length || 0}</p>
-    </div>
-  );
-}
+// Fetch balance
+const balance = await adapter.getBalance('0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb7');
+console.log(`Balance: ${balance.amount} ${balance.asset?.symbol}`);
 ```
 
-## Real-time Data with WebSocket Priority
+## Core API
 
-The library prioritizes WebSocket connections for real-time data and automatically falls back to HTTP polling when WebSocket is unavailable:
+### Using the Registry (Recommended)
 
 ```typescript
-import { useEvmBalanceRealTime, ConnectionState } from '@cygnuswealth/evm-integration';
+import { defaultRegistry } from '@cygnus-wealth/evm-integration';
 
-function RealTimeBalance() {
-  const { 
-    balance, 
-    isWebSocketConnected,
-    connectionState,
-    error 
-  } = useEvmBalanceRealTime(
-    '0x742d35Cc6634C0532925a3b844Bc9e7595f1234',
-    1, // Ethereum mainnet
-    {
-      preferWebSocket: true,    // Default: true
-      pollInterval: 15000,      // Fallback polling interval in ms
-      autoConnect: true         // Auto-connect on mount
-    }
-  );
+// Get adapter for any supported chain
+const ethereum = defaultRegistry.getAdapter(1);
+const polygon = defaultRegistry.getAdapter(137);
+const arbitrum = defaultRegistry.getAdapter(42161);
 
-  return (
-    <div>
-      <p>Connection: {connectionState}</p>
-      <p>WebSocket Active: {isWebSocketConnected ? 'Yes' : 'No (Using HTTP polling)'}</p>
-      <p>Balance: {balance?.value?.amount} {balance?.asset.symbol}</p>
-    </div>
-  );
-}
+// All adapters share the same interface
+const balance = await ethereum.getBalance(address);
+const tokens = await polygon.getTokenBalances(address);
 ```
 
-### Connection States
-
-- `DISCONNECTED` - Not connected
-- `CONNECTING` - Establishing connection
-- `CONNECTED_WS` - Connected via WebSocket (real-time)
-- `CONNECTED_HTTP` - Connected via HTTP (polling fallback)
-- `ERROR` - Connection error
-
-## Available Hooks
-
-### `useEvmBalance`
-
-Fetches and monitors EVM wallet balances in real-time.
+### Direct Adapter Usage
 
 ```typescript
-const { balance, isLoading, error } = useEvmBalance({
-  address: '0x...', // EVM address
-  chainId: 1,       // Network ID (default: 1)
+import { EvmChainAdapter } from '@cygnus-wealth/evm-integration';
+
+const adapter = new EvmChainAdapter({
+  id: 1,
+  name: 'Ethereum',
+  symbol: 'ETH',
+  decimals: 18,
+  endpoints: {
+    http: ['https://eth-mainnet.public.blastapi.io'],
+    ws: ['wss://eth-mainnet.public.blastapi.io']
+  },
+  explorer: 'https://etherscan.io'
+});
+
+await adapter.connect();
+const balance = await adapter.getBalance(address);
+```
+
+## Supported Chains
+
+| Chain | Chain ID | Symbol |
+|-------|----------|--------|
+| Ethereum | 1 | ETH |
+| Polygon | 137 | MATIC |
+| Arbitrum | 42161 | ETH |
+| Optimism | 10 | ETH |
+| Base | 8453 | ETH |
+
+## Examples
+
+### Get Token Balances
+
+```typescript
+const adapter = defaultRegistry.getAdapter(1);
+
+const tokenBalances = await adapter.getTokenBalances(
+  '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb7',
+  [
+    { address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', symbol: 'USDC' },
+    { address: '0xdAC17F958D2ee523a2206206994597C13D831ec7', symbol: 'USDT' }
+  ]
+);
+
+tokenBalances.forEach(balance => {
+  console.log(`${balance.asset?.symbol}: ${balance.amount}`);
 });
 ```
 
-### `useEvmTransactions`
-
-Retrieves transaction history for an address.
+### Real-time Balance Updates
 
 ```typescript
-const { transactions, isLoading, error } = useEvmTransactions({
-  address: '0x...',
-  chainId: 1,
-  limit: 100 // Optional: number of transactions
-});
-```
+const adapter = defaultRegistry.getAdapter(1);
 
-### `useEvmConnect`
-
-Manages wallet connections for read-only access.
-
-```typescript
-const { connect, disconnect, isConnected, address } = useEvmConnect();
-```
-
-### `useEvmBalanceRealTime`
-
-Provides real-time balance updates with WebSocket support.
-
-```typescript
-const { balance, isLoading, error } = useEvmBalanceRealTime({
-  address: '0x...',
-  chainId: 1,
-  updateInterval: 5000 // Optional: polling interval in ms
-});
-```
-
-### `useEvmTransactionMonitor`
-
-Monitors new transactions in real-time.
-
-```typescript
-const { transactions, subscribe, unsubscribe } = useEvmTransactionMonitor({
-  address: '0x...',
-  chainId: 1,
-  onNewTransaction: (tx) => console.log('New transaction:', tx)
-});
-```
-
-## Supported Networks
-
-The library supports all EVM-compatible chains. Common chain IDs:
-
-- Ethereum Mainnet: `1`
-- Polygon: `137`
-- Arbitrum One: `42161`
-- Optimism: `10`
-- BSC: `56`
-- Avalanche: `43114`
-
-## Configuration
-
-### Custom RPC Endpoints
-
-```typescript
-import { configureEvmClient } from '@cygnuswealth/evm-integration';
-
-configureEvmClient({
-  rpcUrls: {
-    1: 'https://your-ethereum-rpc.com',
-    137: 'https://your-polygon-rpc.com'
+const unsubscribe = await adapter.subscribeToBalance(
+  address,
+  (balance) => {
+    console.log('Balance updated:', balance.amount);
   }
-});
+);
+
+// Stop watching
+unsubscribe();
 ```
 
-## TypeScript
-
-The library is written in TypeScript and exports all necessary types:
+### Multi-chain Balance Check
 
 ```typescript
-import type { EvmAsset, EvmTransaction } from '@cygnuswealth/evm-integration';
+const chains = [1, 137, 42161, 10, 8453];
 
-interface EvmAsset {
-  symbol: string;
-  decimals: number;
-  value: bigint;
-  formatted: string;
+const balances = await Promise.all(
+  chains.map(async (chainId) => {
+    const adapter = defaultRegistry.getAdapter(chainId);
+    return adapter.getBalance(address);
+  })
+);
+```
+
+## Framework Integration
+
+This library is framework-agnostic. For framework-specific integrations:
+
+- **React**: Use `@cygnus-wealth/evm-integration-react` (coming soon)
+- **Vue**: Use `@cygnus-wealth/evm-integration-vue` (coming soon)
+- **Node.js/CLI**: Use directly as shown in examples
+
+## API Reference
+
+### IChainAdapter Interface
+
+```typescript
+interface IChainAdapter {
+  getBalance(address: Address): Promise<Balance>
+  getTokenBalances(address: Address, tokens?: TokenConfig[]): Promise<Balance[]>
+  getTransactions(address: Address, options?: TransactionOptions): Promise<Transaction[]>
+  subscribeToBalance(address: Address, callback: (balance: Balance) => void): Promise<Unsubscribe>
+  connect(): Promise<void>
+  disconnect(): void
+  getChainInfo(): ChainInfo
+  isHealthy(): Promise<boolean>
 }
 ```
+
+All methods return types from `@cygnus-wealth/data-models`.
+
+## Adding Custom Chains
+
+Create a JSON configuration file:
+
+```json
+{
+  "id": 56,
+  "name": "BNB Smart Chain",
+  "symbol": "BNB",
+  "decimals": 18,
+  "endpoints": {
+    "http": ["https://bsc-dataseed.binance.org"],
+    "ws": ["wss://bsc-ws-node.nariox.org"]
+  },
+  "explorer": "https://bscscan.com"
+}
+```
+
+Then register it:
+
+```typescript
+import { ChainRegistry } from '@cygnus-wealth/evm-integration';
+import bscConfig from './bsc-config.json';
+
+const registry = new ChainRegistry();
+registry.registerChain(bscConfig);
+
+const bscAdapter = registry.getAdapter(56);
+```
+
+## Architecture
+
+See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed technical architecture.
 
 ## Development
 
-### Prerequisites
-
-- Node.js 16+
-- npm or yarn
-
-### Setup
-
 ```bash
-# Clone the repository
-git clone https://github.com/cygnuswealth/evm-integration.git
-cd evm-integration
-
 # Install dependencies
 npm install
+
+# Build library
+npm run build
 
 # Run tests
 npm test
 
-# Build the library
-npm run build
+# Run test UI
+npm run dev:ui
 ```
-
-### Commands
-
-- `npm run build` - Build the library
-- `npm test` - Run tests
-- `npm run test:ui` - Open Vitest UI
-- `npm run test:coverage` - Generate coverage report
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## Security
-
-- This library is **read-only** and never handles private keys
-- All operations run client-side
-- No transaction signing capabilities
-- Report security issues to security@cygnuswealth.com
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) file for details
+MIT
 
-## About CygnusWealth
+## Contributing
 
-CygnusWealth is a decentralized portfolio aggregation platform that prioritizes user sovereignty and privacy. Learn more at [cygnuswealth.com](https://cygnuswealth.com).
-
-## Support
-
-- Documentation: [docs.cygnuswealth.com](https://docs.cygnuswealth.com)
-- Issues: [GitHub Issues](https://github.com/cygnuswealth/evm-integration/issues)
-- Discord: [Join our community](https://discord.gg/cygnuswealth)
+Contributions are welcome! Please read our contributing guidelines before submitting PRs.
