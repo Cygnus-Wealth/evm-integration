@@ -204,10 +204,16 @@ npm test
 npm run dev:ui
 ```
 
+## Contributing
+
+**For Contributors & Developers**: Please start with **[DEVELOPERS.md](./DEVELOPERS.md)** for complete documentation, architecture, and implementation guidelines.
+
+Contributions are welcome! Please:
+1. Read [DEVELOPERS.md](./DEVELOPERS.md) for architecture and conventions
+2. Follow the implementation roadmap and quality standards
+3. Write tests alongside your implementation
+4. Ensure all tests pass and coverage is ≥80%
+
 ## License
 
 MIT
-
-## Contributing
-
-Contributions are welcome! Please read our contributing guidelines before submitting PRs.
