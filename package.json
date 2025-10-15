@@ -29,7 +29,7 @@
     "vitest": "^3.2.4"
   },
   "dependencies": {
-    "@cygnus-wealth/data-models": "file:../data-models",
+    "@cygnus-wealth/data-models": "^1.0.0",
     "viem": "^2.32.1"
   }
 }
