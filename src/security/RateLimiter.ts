@@ -71,7 +71,10 @@ export class RateLimiter implements IRateLimiter {
           reject(
             new RateLimitError(
               `Rate limit exceeded: no tokens available within ${this.config.maxWait}ms`,
-              this.config.maxWait,
+              Date.now() + this.config.maxWait,
+              this.config.capacity,
+              1, // period in seconds
+              this.config.name,
               { limiter: this.config.name }
             )
           );

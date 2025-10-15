@@ -3,6 +3,7 @@
  */
 
 import { Address } from 'viem';
+import { Balance, Transaction } from '@cygnus-wealth/data-models';
 
 /**
  * Creates a mock chain adapter
@@ -23,7 +24,7 @@ export function createMockAdapter(chainId: number): any {
 /**
  * Creates a mock balance response
  */
-export function createMockBalance(params?: Partial<any>): any {
+export function createMockBalance(params?: Partial<Balance>): Balance {
   return {
     address: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb' as Address,
     chainId: 1,
@@ -40,7 +41,7 @@ export function createMockBalance(params?: Partial<any>): any {
 /**
  * Creates a mock transaction response
  */
-export function createMockTransaction(params?: Partial<any>): any {
+export function createMockTransaction(params?: Partial<Transaction>): Transaction {
   return {
     hash: '0x1234567890123456789012345678901234567890123456789012345678901234',
     from: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb' as Address,
