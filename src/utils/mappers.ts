@@ -131,9 +131,9 @@ export function mapEvmTransaction(
     const chain = mapChainIdToChain(chainId);
     
     // Determine transaction type based on available data
-    let type: TransactionType = TransactionType.TRANSFER;
+    let type: TransactionType = TransactionType.TRANSFER_OUT;
     if (!txData.to || txData.to === '0x0000000000000000000000000000000000000000') {
-        type = TransactionType.CONTRACT_INTERACTION;
+        type = TransactionType.OTHER; // Contract deployment or interaction
     }
 
     // Map status
@@ -172,7 +172,7 @@ export function mapEvmTransaction(
             chain: chain,
         };
 
-        transaction.assets_out = [{
+        transaction.assetsOut = [{
             asset: nativeAsset,
             amount: txData.value.toString(),
         }];

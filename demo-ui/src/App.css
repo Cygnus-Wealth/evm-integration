@@ -1,0 +1,337 @@
+.app {
+  width: 100%;
+  max-width: 900px;
+}
+
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 8px;
+  color: #667eea;
+  text-align: center;
+}
+
+.subtitle {
+  text-align: center;
+  color: #666;
+  margin-bottom: 40px;
+  font-size: 1.1rem;
+}
+
+/* Step-by-step guide */
+.steps-container {
+  margin-bottom: 32px;
+}
+
+.step {
+  display: flex;
+  gap: 20px;
+  padding: 24px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  background: #f9fafb;
+  border: 2px solid #e5e7eb;
+  transition: all 0.3s ease;
+}
+
+.step.active {
+  background: #f0f9ff;
+  border-color: #667eea;
+}
+
+.step.completed {
+  background: #f0fdf4;
+  border-color: #10b981;
+  opacity: 0.8;
+}
+
+.step-number {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+}
+
+.step.active .step-number {
+  background: #667eea;
+  color: white;
+}
+
+.step.completed .step-number {
+  background: #10b981;
+  color: white;
+}
+
+.step-content {
+  flex: 1;
+}
+
+.step-content h3 {
+  margin: 0 0 12px 0;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.step-content p {
+  margin: 8px 0;
+  color: #666;
+  line-height: 1.6;
+}
+
+.step-content .small {
+  font-size: 0.9rem;
+  color: #999;
+}
+
+.success {
+  color: #10b981;
+  font-weight: 600;
+}
+
+.action-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  margin-top: 8px;
+}
+
+.action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.faucet-link {
+  display: inline-block;
+  background: #10b981;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  margin: 12px 0;
+  transition: background 0.2s;
+}
+
+.faucet-link:hover {
+  background: #059669;
+}
+
+/* Balance section */
+.balance-section {
+  margin: 32px 0;
+}
+
+.balance-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 32px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.balance-label {
+  font-size: 0.9rem;
+  opacity: 0.9;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.balance-amount {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.last-updated {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  margin-top: 12px;
+}
+
+.checkbox-label input[type='checkbox'] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+/* Advanced section */
+.advanced-section {
+  margin: 24px 0;
+  padding: 16px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.advanced-section summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #667eea;
+  user-select: none;
+}
+
+.advanced-section summary:hover {
+  color: #5568d3;
+}
+
+.address-form {
+  margin-top: 16px;
+}
+
+.address-input {
+  width: 100%;
+  padding: 12px;
+  font-size: 0.95rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  font-family: 'Courier New', monospace;
+  transition: border-color 0.2s;
+}
+
+.address-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.fetch-btn {
+  width: 100%;
+  background: #667eea;
+  color: white;
+  border: none;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.fetch-btn:hover:not(:disabled) {
+  background: #5568d3;
+}
+
+.fetch-btn:disabled {
+  background: #d1d5db;
+  cursor: not-allowed;
+}
+
+/* Error box */
+.error-box {
+  background: #fee2e2;
+  border: 2px solid #ef4444;
+  color: #991b1b;
+  padding: 16px;
+  border-radius: 8px;
+  margin: 24px 0;
+}
+
+/* Tips section */
+.tips-section {
+  background: #fffbeb;
+  padding: 20px;
+  border-radius: 12px;
+  margin: 24px 0;
+  border: 2px solid #fbbf24;
+}
+
+.tips-section h3 {
+  color: #92400e;
+  margin: 0 0 12px 0;
+  font-size: 1.2rem;
+}
+
+.tips-section ul {
+  margin: 0;
+  padding-left: 24px;
+}
+
+.tips-section li {
+  color: #78350f;
+  margin-bottom: 8px;
+  line-height: 1.6;
+}
+
+/* Footer */
+.footer {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e7eb;
+  text-align: center;
+}
+
+.footer p {
+  margin: 8px 0;
+  color: #666;
+}
+
+.footer .small {
+  font-size: 0.85rem;
+  color: #999;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .card {
+    padding: 24px;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  .step {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .step-number {
+    align-self: flex-start;
+  }
+
+  .balance-amount {
+    font-size: 2rem;
+  }
+}

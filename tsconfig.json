@@ -1,17 +1,17 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "module": "NodeNext",
+    "module": "ESNext",
     "strict": true,
     "esModuleInterop": true,
     "declaration": true,
     "outDir": "./dist",
     "rootDir": "./src",
-    "moduleResolution": "nodenext",
+    "moduleResolution": "bundler",
     "jsx": "react-jsx",
     "skipLibCheck": true,
     "resolveJsonModule": true
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "**/*.test.*", "**/test-utils/**", "**/e2e/**"]
+  "exclude": ["node_modules", "dist", "**/*.test.*", "**/test-utils/**", "**/e2e/**", "**/poc/**"]
 }

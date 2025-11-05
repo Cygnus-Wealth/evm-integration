@@ -247,22 +247,30 @@ export class EvmChainAdapter implements IChainAdapter {
             if (tx.from === address || tx.to === address) {
               // Create data-models compatible Transaction
               const chain = mapChainIdToChain(this.config.id);
+              // Create native asset for the chain
+              const nativeAsset = mapTokenToAsset(
+                '0x0000000000000000000000000000000000000000',
+                this.config.symbol,
+                this.config.name,
+                this.config.decimals,
+                this.config.id
+              );
+
               const transaction: Transaction = {
                 id: tx.hash,
+                accountId: address,
                 hash: tx.hash,
                 chain: chain,
                 from: tx.from,
                 to: tx.to || '',
-                value: tx.value.toString(),
-                fee: {
-                  amount: '0', // Would need to calculate from gasPrice * gasUsed
-                  currency: 'USD',
-                  timestamp: new Date()
-                },
                 timestamp: new Date(),
-                status: 'pending',
-                type: 'transfer' as any, // Would need to determine actual type
-                blockNumber: tx.blockNumber?.toString(),
+                status: 'PENDING',
+                type: 'TRANSFER_OUT' as any,
+                blockNumber: Number(tx.blockNumber || 0),
+                assetsOut: tx.value > 0n ? [{
+                  asset: nativeAsset,
+                  amount: tx.value.toString(),
+                }] : undefined,
               };
               callback(transaction);
             }

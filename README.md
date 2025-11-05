@@ -2,6 +2,25 @@
 
 Framework-agnostic TypeScript library for read-only EVM blockchain data access. Returns all data in standardized `@cygnus-wealth/data-models` format.
 
+## 🚀 Quick Start - Live Demo
+
+**Want to see it in action? Run the live demo with one command:**
+
+```bash
+npm run demo
+```
+
+This opens a web UI where you can:
+- ✅ Connect your MetaMask wallet
+- ✅ See live balance updates from Sepolia testnet via WebSocket
+- ✅ Watch balances change in real-time (updates on every new block)
+- ✅ Test with any Ethereum address
+- ✅ Visual indicator showing WebSocket connection status
+
+**The demo includes step-by-step instructions right on the page!**
+
+---
+
 ## Features
 
 - 🔌 **Multi-chain Support** - Ethereum, Polygon, Arbitrum, Optimism, Base, and more
