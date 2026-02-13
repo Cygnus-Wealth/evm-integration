@@ -19,6 +19,7 @@ export interface ChainConfig {
   decimals: number;
   endpoints: EndpointConfig;
   explorer: string;
+  isTestnet?: boolean;
   tokens?: {
     popular?: TokenConfig[];  // Common tokens like USDC, USDT, DAI
     native?: TokenConfig;     // Wrapped native token (WETH, WMATIC, etc)

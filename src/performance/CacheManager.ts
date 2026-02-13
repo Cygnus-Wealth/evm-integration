@@ -52,12 +52,15 @@ export class CacheManager<T = any> {
   private l1Config: CacheLayerConfig;
   private stats: CacheStats;
   private cleanupInterval: NodeJS.Timeout;
+  private keyPrefix: string;
 
   /**
    * Creates a new cache manager
    * @param config - Cache layer configuration
+   * @param environmentPrefix - Optional environment prefix for cache keys (e.g. 'production', 'testnet')
    */
-  constructor(config: Partial<CacheLayerConfig> = {}) {
+  constructor(config: Partial<CacheLayerConfig> = {}, environmentPrefix?: string) {
+    this.keyPrefix = environmentPrefix ? `${environmentPrefix}:` : '';
     this.l1Config = {
       capacity: config.capacity ?? 1000,
       defaultTTL: config.defaultTTL ?? 60,
@@ -80,13 +83,18 @@ export class CacheManager<T = any> {
     this.cleanupInterval = setInterval(() => this.cleanup(), 60000);
   }
 
+  private prefixKey(key: string): string {
+    return this.keyPrefix + key;
+  }
+
   /**
    * Gets a value from cache
    * @param key - Cache key
    * @returns Cached value or undefined if not found/expired
    */
   async get(key: string): Promise<T | undefined> {
-    const entry = this.l1Cache.get(key);
+    const prefixed = this.prefixKey(key);
+    const entry = this.l1Cache.get(prefixed);
 
     if (!entry) {
       this.stats.misses++;
@@ -96,7 +104,7 @@ export class CacheManager<T = any> {
 
     // Check if expired
     if (this.isExpired(entry)) {
-      this.l1Cache.delete(key);
+      this.l1Cache.delete(prefixed);
       this.stats.misses++;
       this.updateHitRate();
       return undefined;
@@ -118,11 +126,12 @@ export class CacheManager<T = any> {
    * @param ttl - Time to live in seconds (optional, uses default)
    */
   async set(key: string, value: T, ttl?: number): Promise<void> {
+    const prefixed = this.prefixKey(key);
     const ttlSeconds = ttl ?? this.l1Config.defaultTTL;
     const expiresAt = Date.now() + ttlSeconds * 1000;
 
     // Check if we need to evict
-    if (this.l1Cache.size >= this.l1Config.capacity && !this.l1Cache.has(key)) {
+    if (this.l1Cache.size >= this.l1Config.capacity && !this.l1Cache.has(prefixed)) {
       if (this.l1Config.enableLRU) {
         this.evictLRU();
       } else {
@@ -143,7 +152,7 @@ export class CacheManager<T = any> {
       lastAccessedAt: Date.now(),
     };
 
-    this.l1Cache.set(key, entry);
+    this.l1Cache.set(prefixed, entry);
     this.stats.sets++;
     this.stats.size = this.l1Cache.size;
   }
@@ -154,10 +163,11 @@ export class CacheManager<T = any> {
    * @returns True if key exists and not expired
    */
   async has(key: string): Promise<boolean> {
-    const entry = this.l1Cache.get(key);
+    const prefixed = this.prefixKey(key);
+    const entry = this.l1Cache.get(prefixed);
     if (!entry) return false;
     if (this.isExpired(entry)) {
-      this.l1Cache.delete(key);
+      this.l1Cache.delete(prefixed);
       return false;
     }
     return true;
@@ -169,7 +179,7 @@ export class CacheManager<T = any> {
    * @returns True if deleted
    */
   async delete(key: string): Promise<boolean> {
-    const deleted = this.l1Cache.delete(key);
+    const deleted = this.l1Cache.delete(this.prefixKey(key));
     if (deleted) {
       this.stats.deletes++;
       this.stats.size = this.l1Cache.size;
@@ -216,6 +226,10 @@ export class CacheManager<T = any> {
    */
   static generateKey(...parts: (string | number)[]): string {
     return parts.join(':');
+  }
+
+  getKeyPrefix(): string {
+    return this.keyPrefix;
   }
 
   /**

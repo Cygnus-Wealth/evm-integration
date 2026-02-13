@@ -8,13 +8,14 @@ import {
   parseAbi,
   fallback
 } from 'viem';
-import { 
-  mainnet, 
-  polygon, 
-  arbitrum, 
-  optimism, 
+import {
+  mainnet,
+  polygon,
+  arbitrum,
+  optimism,
   base,
-  Chain as ViemChain 
+  sepolia,
+  Chain as ViemChain
 } from 'viem/chains';
 import {
   IChainAdapter,
@@ -53,6 +54,7 @@ export class EvmChainAdapter implements IChainAdapter {
       case 42161: return arbitrum;
       case 10: return optimism;
       case 8453: return base;
+      case 11155111: return sepolia;
       default: 
         // Create custom chain for unsupported chains
         return {

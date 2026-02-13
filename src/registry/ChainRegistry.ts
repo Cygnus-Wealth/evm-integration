@@ -8,11 +8,16 @@ import polygonConfig from './configs/polygon.json';
 import arbitrumConfig from './configs/arbitrum.json';
 import optimismConfig from './configs/optimism.json';
 import baseConfig from './configs/base.json';
+import sepoliaConfig from './configs/sepolia.json';
+
+export type NetworkEnvironment = 'production' | 'testnet' | 'local';
 
 export class ChainRegistry {
   private chains: Map<number, ChainConfig> = new Map();
   private adapters: Map<number, IChainAdapter> = new Map();
-  private defaultConfigs: Map<number, ChainConfig> = new Map([
+  private environment: NetworkEnvironment;
+
+  private static mainnetConfigs: Map<number, ChainConfig> = new Map([
     [1, ethereumConfig as ChainConfig],
     [137, polygonConfig as ChainConfig],
     [42161, arbitrumConfig as ChainConfig],
@@ -20,16 +25,34 @@ export class ChainRegistry {
     [8453, baseConfig as ChainConfig],
   ]);
 
-  constructor(configs?: ChainConfig[]) {
-    // Load default configurations
-    this.defaultConfigs.forEach((config, chainId) => {
-      this.registerChain(config);
-    });
+  private static testnetConfigs: Map<number, ChainConfig> = new Map([
+    [11155111, sepoliaConfig as ChainConfig],
+  ]);
+
+  constructor(environment: NetworkEnvironment = 'production', configs?: ChainConfig[]) {
+    this.environment = environment;
+
+    // Load configs based on environment
+    if (environment === 'production' || environment === 'local') {
+      ChainRegistry.mainnetConfigs.forEach((config) => {
+        this.registerChain(config);
+      });
+    }
+
+    if (environment === 'testnet' || environment === 'local') {
+      ChainRegistry.testnetConfigs.forEach((config) => {
+        this.registerChain(config);
+      });
+    }
 
     // Override with custom configs if provided
     if (configs) {
       configs.forEach(config => this.registerChain(config));
     }
+  }
+
+  getEnvironment(): NetworkEnvironment {
+    return this.environment;
   }
 
   /**
@@ -69,7 +92,7 @@ export class ChainRegistry {
     const config = Array.from(this.chains.values()).find(
       c => c.name.toLowerCase() === name.toLowerCase()
     );
-    
+
     if (!config) {
       throw new Error(`Chain "${name}" not found`);
     }

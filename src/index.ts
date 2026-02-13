@@ -13,6 +13,7 @@
 
 // Chain Registry - Primary API for multi-chain support
 export { ChainRegistry, defaultRegistry } from './registry/ChainRegistry';
+export type { NetworkEnvironment } from './registry/ChainRegistry';
 
 // Chain Adapter - Direct adapter usage
 export { EvmChainAdapter } from './adapters/EvmChainAdapter';
@@ -42,6 +43,7 @@ import polygonConfig from './registry/configs/polygon.json';
 import arbitrumConfig from './registry/configs/arbitrum.json';
 import optimismConfig from './registry/configs/optimism.json';
 import baseConfig from './registry/configs/base.json';
+import sepoliaConfig from './registry/configs/sepolia.json';
 
 export const chains = {
   ethereum: ethereumConfig,
@@ -49,6 +51,7 @@ export const chains = {
   arbitrum: arbitrumConfig,
   optimism: optimismConfig,
   base: baseConfig,
+  sepolia: sepoliaConfig,
 };
 
 // ============================================================================
