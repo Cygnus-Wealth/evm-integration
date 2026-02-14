@@ -16,7 +16,7 @@
     "build": "tsup",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "test:e2e": "vitest run src/e2e/balanceVerification.test.tsx",
+    "test:e2e": "vitest run src/registry/ChainRegistry.e2e.test.ts",
     "verify:balance": "tsx src/e2e/verifyBalance.ts",
     "verify:websocket": "tsx src/e2e/websocketVerification.ts",
     "demo": "cd demo-ui && npm install && npm run dev",
