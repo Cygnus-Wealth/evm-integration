@@ -386,13 +386,17 @@ describe('BatchProcessor', () => {
   });
 
   describe('Clear', () => {
-    it('should clear pending requests', () => {
+    it('should clear pending requests', async () => {
       const processor = vi.fn().mockResolvedValue([]);
       const batch = new BatchProcessor(processor);
 
-      batch.add(1);
-      batch.add(2);
+      const p1 = batch.add(1);
+      const p2 = batch.add(2);
       batch.clear();
+
+      // Catch expected rejections from cleared requests
+      await expect(p1).rejects.toThrow('Batch processor cleared');
+      await expect(p2).rejects.toThrow('Batch processor cleared');
 
       const stats = batch.getStats();
       expect(stats.totalRequests).toBe(0);

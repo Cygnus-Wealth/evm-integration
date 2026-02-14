@@ -40,7 +40,7 @@ describe('EnhancedWebSocketProvider', () => {
 
   afterEach(async () => {
     await provider.cleanup();
-    vi.clearAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('WebSocket-first connection', () => {
@@ -59,9 +59,11 @@ describe('EnhancedWebSocketProvider', () => {
     });
 
     it('should fall back to HTTP when WebSocket connection fails', async () => {
-      // Mock WebSocket failure
-      mockClient.getBlockNumber.mockRejectedValueOnce(new Error('WebSocket connection failed'));
-      
+      // Mock WebSocket failure for all WS URLs (mainnet has 2 wsUrls)
+      mockClient.getBlockNumber
+        .mockRejectedValueOnce(new Error('WebSocket connection failed'))
+        .mockRejectedValueOnce(new Error('WebSocket connection failed'));
+
       const httpTransport = vi.fn();
       vi.mocked(http).mockReturnValue(httpTransport);
 
@@ -73,20 +75,15 @@ describe('EnhancedWebSocketProvider', () => {
     });
 
     it('should try multiple WebSocket URLs before falling back', async () => {
-      let wsCallCount = 0;
-      vi.mocked(webSocket).mockImplementation((url) => {
-        wsCallCount++;
-        if (wsCallCount < 3) {
-          // First two URLs fail
-          mockClient.getBlockNumber.mockRejectedValueOnce(new Error('Connection failed'));
-        }
-        return vi.fn();
-      });
+      // Mainnet has 2 wsUrls — fail all of them to verify both are tried
+      mockClient.getBlockNumber
+        .mockRejectedValueOnce(new Error('Connection failed'))
+        .mockRejectedValueOnce(new Error('Connection failed'));
 
       const client = await provider.connect(1);
 
-      // Should try all 3 WebSocket URLs
-      expect(webSocket).toHaveBeenCalledTimes(3);
+      // Should try both WebSocket URLs before falling back to HTTP
+      expect(webSocket).toHaveBeenCalledTimes(2);
     });
   });
 
@@ -116,9 +113,11 @@ describe('EnhancedWebSocketProvider', () => {
     });
 
     it('should use polling when connected via HTTP', async () => {
-      // Force HTTP connection
-      mockClient.getBlockNumber.mockRejectedValueOnce(new Error('WebSocket failed'));
-      
+      // Force HTTP connection (reject both WS URLs for mainnet)
+      mockClient.getBlockNumber
+        .mockRejectedValueOnce(new Error('WebSocket failed'))
+        .mockRejectedValueOnce(new Error('WebSocket failed'));
+
       await provider.connect(1);
       expect(provider.getConnectionState(1)).toBe(ConnectionState.CONNECTED_HTTP);
 
@@ -199,12 +198,17 @@ describe('EnhancedWebSocketProvider', () => {
     });
 
     it('should poll blocks for transactions when using HTTP', async () => {
-      // Force HTTP connection
-      mockClient.getBlockNumber.mockRejectedValueOnce(new Error('WebSocket failed'));
-      
+      // Force HTTP connection (reject both WS URLs for mainnet)
+      mockClient.getBlockNumber
+        .mockRejectedValueOnce(new Error('WebSocket failed'))
+        .mockRejectedValueOnce(new Error('WebSocket failed'));
+
       await provider.connect(1);
-      
-      mockClient.getBlockNumber.mockResolvedValue(BigInt(1001));
+
+      // First poll sets lastBlockNumber=1000, second poll finds new block 1001
+      mockClient.getBlockNumber
+        .mockResolvedValueOnce(BigInt(1000))
+        .mockResolvedValue(BigInt(1001));
       mockClient.getBlock.mockResolvedValue({
         transactions: [mockTx],
       });
@@ -244,11 +248,13 @@ describe('EnhancedWebSocketProvider', () => {
       await provider.connect(1);
       expect(provider.isWebSocketConnected(1)).toBe(true);
 
-      // Force HTTP connection
+      // Force HTTP connection (reject both WS URLs for mainnet)
       provider.disconnect(1);
-      mockClient.getBlockNumber.mockRejectedValueOnce(new Error('WebSocket failed'));
+      mockClient.getBlockNumber
+        .mockRejectedValueOnce(new Error('WebSocket failed'))
+        .mockRejectedValueOnce(new Error('WebSocket failed'));
       await provider.connect(1);
-      
+
       expect(provider.isWebSocketConnected(1)).toBe(false);
     });
 
@@ -290,9 +296,11 @@ describe('EnhancedWebSocketProvider', () => {
     });
 
     it('should clean up polling intervals', async () => {
-      // Force HTTP connection
-      mockClient.getBlockNumber.mockRejectedValueOnce(new Error('WebSocket failed'));
-      
+      // Force HTTP connection (reject both WS URLs for mainnet)
+      mockClient.getBlockNumber
+        .mockRejectedValueOnce(new Error('WebSocket failed'))
+        .mockRejectedValueOnce(new Error('WebSocket failed'));
+
       await provider.connect(1);
       
       const callback = vi.fn();

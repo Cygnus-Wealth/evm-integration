@@ -118,16 +118,15 @@ describe('RateLimiter', () => {
 
       await limiter.acquire(); // Consume the token
 
-      // Attach rejection handler BEFORE advancing time
-      const acquirePromise = limiter.acquire().catch((error) => {
-        throw error; // Re-throw for expect to catch
-      });
+      let caughtError: Error | null = null;
+      const acquirePromise = limiter.acquire().catch((e) => { caughtError = e; });
 
       // Advance past maxWait
       await vi.advanceTimersByTimeAsync(600);
+      await acquirePromise;
 
-      await expect(acquirePromise).rejects.toThrow(RateLimitError);
-      await expect(acquirePromise).rejects.toThrow('Rate limit exceeded');
+      expect(caughtError).toBeInstanceOf(RateLimitError);
+      expect(caughtError!.message).toContain('Rate limit exceeded');
     });
 
     it('should handle multiple waiting requests', async () => {
@@ -258,15 +257,14 @@ describe('RateLimiter', () => {
       await limiter.acquire(); // Consume token
 
       const fn = async () => 'result';
-      // Attach rejection handler BEFORE advancing time
-      const executePromise = limiter.execute(fn).catch((error) => {
-        throw error; // Re-throw for expect to catch
-      });
+      let caughtError: Error | null = null;
+      const executePromise = limiter.execute(fn).catch((e) => { caughtError = e; });
 
       // Advance past maxWait
       await vi.advanceTimersByTimeAsync(600);
+      await executePromise;
 
-      await expect(executePromise).rejects.toThrow(RateLimitError);
+      expect(caughtError).toBeInstanceOf(RateLimitError);
     });
   });
 
@@ -336,14 +334,14 @@ describe('RateLimiter', () => {
 
       await limiter.acquire();
 
-      // Attach rejection handler BEFORE advancing time
-      const acquirePromise = limiter.acquire().catch((error) => {
-        throw error; // Re-throw for expect to catch
-      });
+      let caughtError: Error | null = null;
+      const acquirePromise = limiter.acquire().catch((e) => { caughtError = e; });
 
       await vi.advanceTimersByTimeAsync(1100);
+      await acquirePromise;
 
-      await expect(acquirePromise).rejects.toThrow('no tokens available within 1000ms');
+      expect(caughtError).not.toBeNull();
+      expect(caughtError!.message).toContain('no tokens available within 1000ms');
     });
 
     it('should handle zero initial capacity', async () => {

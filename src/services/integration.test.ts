@@ -242,20 +242,15 @@ describe('Service Integration Tests', () => {
       const adapters = new Map([[1, adapter]]);
       const service = new BalanceService(adapters, {
         enableRetry: true,
+        enableCircuitBreaker: false,
         maxRetries: 3,
         retryDelay: 100,
       });
 
-      const balancePromise = service
-        .getBalance('0x1234567890123456789012345678901234567890' as Address, 1)
-        .catch((error) => {
-          throw error;
-        });
-
-      // Advance time for all retries
-      await vi.advanceTimersByTimeAsync(1000);
-
-      await expect(balancePromise).rejects.toThrow('Persistent Error');
+      // Error is not retriable (no network/timeout keywords), so it fails immediately
+      await expect(
+        service.getBalance('0x1234567890123456789012345678901234567890' as Address, 1)
+      ).rejects.toThrow('Persistent Error');
 
       await service.destroy();
     });
