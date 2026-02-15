@@ -8,6 +8,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { BalanceService } from './BalanceService';
 import { RetryPolicy } from '../resilience/RetryPolicy';
+import { ConnectionError } from '../utils/errors';
 import { createMockAdapter, createMockBalance, createMockTransaction } from '../test-utils';
 import type { Address } from 'viem';
 
@@ -199,29 +200,27 @@ describe('Service Integration Tests', () => {
   });
 
   describe('Error Recovery Workflows', () => {
-    it.skip('should recover from temporary RPC failures with retry', async () => {
-      // TODO: This test has timing issues with retry policy and fake/real timers
-      // Skipping for now - retry functionality is tested in RetryPolicy.test.ts
-      // Use real timers for this test
+    it('should recover from temporary RPC failures with retry', async () => {
+      // Use real timers since RetryPolicy.sleep() uses setTimeout
       vi.useRealTimers();
 
       const mockBalance = createMockBalance({ balanceFormatted: '1.0', symbol: 'ETH' });
       const adapter = createMockAdapter(1);
 
-      // Fail twice, then succeed
+      // Fail twice with retriable ConnectionError, then succeed
       adapter.getBalance
-        .mockRejectedValueOnce(new Error('Temporary RPC Error'))
-        .mockRejectedValueOnce(new Error('Temporary RPC Error'))
+        .mockRejectedValueOnce(ConnectionError.timeout('https://rpc.example.com', 5000))
+        .mockRejectedValueOnce(ConnectionError.timeout('https://rpc.example.com', 5000))
         .mockResolvedValue(mockBalance);
 
       const adapters = new Map([[1, adapter]]);
 
       const service = new BalanceService(adapters, {
         enableRetry: true,
-        enableCircuitBreaker: false, // Disable circuit breaker to test retry in isolation
-        enableCache: false, // Disable cache
+        enableCircuitBreaker: false,
+        enableCache: false,
         maxRetries: 5,
-        retryDelay: 1, // Very short delay for test speed
+        retryDelay: 1,
       });
 
       // Should succeed after retries
