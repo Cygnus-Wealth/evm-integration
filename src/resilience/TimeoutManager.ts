@@ -1,4 +1,4 @@
-import { ConnectionError } from '../utils/errors';
+import { ConnectionError } from '../utils/errors.js';
 
 /**
  * Timeout hierarchy levels

@@ -1,4 +1,4 @@
-import { WebSocketProvider } from '../providers/WebSocketProvider';
+import { WebSocketProvider } from '../providers/WebSocketProvider.js';
 
 export interface ConnectionStatus {
   chainId: number;

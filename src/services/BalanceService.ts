@@ -1,13 +1,13 @@
 import { Address } from 'viem';
 import { Balance } from '@cygnus-wealth/data-models';
-import { IChainAdapter, TokenConfig } from '../types/IChainAdapter';
-import { CacheManager } from '../performance/CacheManager';
-import { BatchProcessor } from '../performance/BatchProcessor';
-import { RequestCoalescer } from '../performance/RequestCoalescer';
-import { CircuitBreaker } from '../resilience/CircuitBreaker';
-import { RetryPolicy } from '../resilience/RetryPolicy';
-import { ValidationError } from '../utils/errors';
-import { Validators } from '../utils/validators';
+import { IChainAdapter, TokenConfig } from '../types/IChainAdapter.js';
+import { CacheManager } from '../performance/CacheManager.js';
+import { BatchProcessor } from '../performance/BatchProcessor.js';
+import { RequestCoalescer } from '../performance/RequestCoalescer.js';
+import { CircuitBreaker } from '../resilience/CircuitBreaker.js';
+import { RetryPolicy } from '../resilience/RetryPolicy.js';
+import { ValidationError } from '../utils/errors.js';
+import { Validators } from '../utils/validators.js';
 
 /**
  * Balance query options

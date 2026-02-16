@@ -1,9 +1,9 @@
 import { Address } from 'viem';
 import { Balance, Transaction } from '@cygnus-wealth/data-models';
-import { BalanceService } from './BalanceService';
-import { TransactionService } from './TransactionService';
-import { TokenConfig } from '../types/IChainAdapter';
-import { Validators } from '../utils/validators';
+import { BalanceService } from './BalanceService.js';
+import { TransactionService } from './TransactionService.js';
+import { TokenConfig } from '../types/IChainAdapter.js';
+import { Validators } from '../utils/validators.js';
 
 /**
  * Tracking configuration for an address

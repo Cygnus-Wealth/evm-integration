@@ -9,7 +9,7 @@ import {
   fallback
 } from 'viem';
 import { mainnet, polygon, arbitrum, optimism, bsc, avalanche, base } from 'viem/chains';
-import { ConnectionManager } from '../services/ConnectionManager';
+import { ConnectionManager } from '../services/ConnectionManager.js';
 
 export interface ChainConfig {
   chainId: number;

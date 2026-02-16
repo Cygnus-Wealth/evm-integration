@@ -1,14 +1,14 @@
-import { IChainAdapter, ChainInfo } from '../types/IChainAdapter';
-import { ChainConfig } from '../types/ChainConfig';
-import { EvmChainAdapter } from '../adapters/EvmChainAdapter';
+import { IChainAdapter, ChainInfo } from '../types/IChainAdapter.js';
+import { ChainConfig } from '../types/ChainConfig.js';
+import { EvmChainAdapter } from '../adapters/EvmChainAdapter.js';
 
 // Import default configurations
-import ethereumConfig from './configs/ethereum.json';
-import polygonConfig from './configs/polygon.json';
-import arbitrumConfig from './configs/arbitrum.json';
-import optimismConfig from './configs/optimism.json';
-import baseConfig from './configs/base.json';
-import sepoliaConfig from './configs/sepolia.json';
+import ethereumConfig from './configs/ethereum.json' with { type: 'json' };
+import polygonConfig from './configs/polygon.json' with { type: 'json' };
+import arbitrumConfig from './configs/arbitrum.json' with { type: 'json' };
+import optimismConfig from './configs/optimism.json' with { type: 'json' };
+import baseConfig from './configs/base.json' with { type: 'json' };
+import sepoliaConfig from './configs/sepolia.json' with { type: 'json' };
 
 export type NetworkEnvironment = 'production' | 'testnet' | 'local';
 

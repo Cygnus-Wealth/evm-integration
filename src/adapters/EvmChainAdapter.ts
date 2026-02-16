@@ -23,10 +23,10 @@ import {
   TransactionOptions,
   ChainInfo,
   Unsubscribe
-} from '../types/IChainAdapter';
-import { ChainConfig } from '../types/ChainConfig';
+} from '../types/IChainAdapter.js';
+import { ChainConfig } from '../types/ChainConfig.js';
 import { Balance, Transaction, AssetType, Chain as DataModelChain } from '@cygnus-wealth/data-models';
-import { mapChainIdToChain, mapEvmBalanceToBalance, mapTokenToAsset } from '../utils/mappers';
+import { mapChainIdToChain, mapEvmBalanceToBalance, mapTokenToAsset } from '../utils/mappers.js';
 
 // ERC20 ABI for balance queries
 const ERC20_ABI = parseAbi([

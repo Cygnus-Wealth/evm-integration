@@ -1,4 +1,4 @@
-import { ErrorUtils } from '../utils/errors';
+import { ErrorUtils } from '../utils/errors.js';
 
 /**
  * Retry configuration

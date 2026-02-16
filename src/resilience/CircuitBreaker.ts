@@ -1,4 +1,4 @@
-import { CircuitBreakerError } from '../utils/errors';
+import { CircuitBreakerError } from '../utils/errors.js';
 
 /**
  * Circuit breaker state

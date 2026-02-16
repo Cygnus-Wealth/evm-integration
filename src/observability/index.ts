@@ -24,9 +24,9 @@ export {
   CorrelationContext,
   Span,
   ICorrelationContextManager,
-} from './interfaces';
+} from './interfaces.js';
 
 // Implementations
-export { HealthMonitor } from './HealthMonitor';
-export { MetricsCollector, METRICS } from './MetricsCollector';
-export { CorrelationContextManager } from './CorrelationContextManager';
+export { HealthMonitor } from './HealthMonitor.js';
+export { MetricsCollector, METRICS } from './MetricsCollector.js';
+export { CorrelationContextManager } from './CorrelationContextManager.js';

@@ -1,9 +1,9 @@
 import { Address } from 'viem';
 import { Transaction, TransactionType } from '@cygnus-wealth/data-models';
-import { IChainAdapter, TransactionOptions } from '../types/IChainAdapter';
-import { CacheManager } from '../performance/CacheManager';
-import { ValidationError } from '../utils/errors';
-import { Validators } from '../utils/validators';
+import { IChainAdapter, TransactionOptions } from '../types/IChainAdapter.js';
+import { CacheManager } from '../performance/CacheManager.js';
+import { ValidationError } from '../utils/errors.js';
+import { Validators } from '../utils/validators.js';
 
 /**
  * Transaction query options

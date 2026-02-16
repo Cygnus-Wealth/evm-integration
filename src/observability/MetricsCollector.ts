@@ -14,7 +14,7 @@ import {
   HistogramBucket,
   Summary,
   SummaryQuantile,
-} from './interfaces';
+} from './interfaces.js';
 
 /**
  * Default histogram buckets (in milliseconds for duration tracking)

@@ -9,7 +9,7 @@ import {
   ICorrelationContextManager,
   CorrelationContext,
   Span,
-} from './interfaces';
+} from './interfaces.js';
 
 /**
  * Correlation context manager implementation

@@ -5,8 +5,8 @@
  * @see interfaces.ts for IRateLimiter contract
  */
 
-import { IRateLimiter, RateLimiterConfig } from './interfaces';
-import { RateLimitError } from '../utils/errors';
+import { IRateLimiter, RateLimiterConfig } from './interfaces.js';
+import { RateLimitError } from '../utils/errors.js';
 
 /**
  * Default rate limiter configuration

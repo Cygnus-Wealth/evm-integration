@@ -11,7 +11,7 @@ import {
   HealthCheckResult,
   SystemHealth,
   HealthCheckConfig,
-} from './interfaces';
+} from './interfaces.js';
 
 /**
  * Health monitor implementation

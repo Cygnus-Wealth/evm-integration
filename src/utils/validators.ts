@@ -1,5 +1,5 @@
 import { Address } from 'viem';
-import { ValidationError } from './errors';
+import { ValidationError } from './errors.js';
 
 /**
  * Input validation utilities
