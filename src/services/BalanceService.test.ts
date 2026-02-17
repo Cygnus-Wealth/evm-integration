@@ -615,7 +615,7 @@ describe('BalanceService', () => {
       await service.getAllBalances(testAddress, chainId);
 
       expect(mockAdapter.getBalance).toHaveBeenCalledWith(testAddress);
-      expect(mockAdapter.getTokenBalances).toHaveBeenCalledWith(testAddress, undefined);
+      expect(mockAdapter.getTokenBalances).toHaveBeenCalledWith(testAddress);
     });
 
     it('should pass specific tokens when provided', async () => {
@@ -674,6 +674,24 @@ describe('BalanceService', () => {
 
       expect(balances).toHaveLength(1);
       expect(balances[0]).toEqual(mockNativeBalance);
+    });
+
+    it('should deduplicate balances by assetId', async () => {
+      // Simulate adapter returning a duplicate of native
+      const duplicateNative: Balance = {
+        assetId: 'ethereum-native',
+        asset: mockNativeBalance.asset,
+        amount: '999',
+      };
+      mockAdapter.getTokenBalances = vi.fn().mockResolvedValue([duplicateNative, mockUsdcBalance]);
+
+      const balances = await service.getAllBalances(testAddress, chainId);
+
+      // Native should appear only once (from getBalance, not from tokens)
+      const nativeBalances = balances.filter(b => b.assetId === 'ethereum-native');
+      expect(nativeBalances).toHaveLength(1);
+      expect(nativeBalances[0]).toEqual(mockNativeBalance);
+      expect(balances).toHaveLength(2); // native + USDC (deduped duplicate)
     });
 
     it('should fetch native and tokens in parallel', async () => {
