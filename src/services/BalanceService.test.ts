@@ -536,6 +536,289 @@ describe('BalanceService', () => {
     });
   });
 
+  describe('getAllBalances', () => {
+    const usdcAddress: Address = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
+    const usdtAddress: Address = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+
+    const mockNativeBalance: Balance = {
+      assetId: 'ethereum-native',
+      asset: {
+        id: 'ethereum-native',
+        symbol: 'ETH',
+        name: 'ETH',
+        type: 'CRYPTOCURRENCY' as any,
+        decimals: 18,
+        chain: 'ETHEREUM' as any,
+      },
+      amount: '1000000000000000000',
+    };
+
+    const mockUsdcBalance: Balance = {
+      assetId: `ethereum-${usdcAddress.toLowerCase()}`,
+      asset: {
+        id: `ethereum-${usdcAddress.toLowerCase()}`,
+        symbol: 'USDC',
+        name: 'USD Coin',
+        type: 'CRYPTOCURRENCY' as any,
+        decimals: 6,
+        contractAddress: usdcAddress,
+        chain: 'ETHEREUM' as any,
+      },
+      amount: '1000000',
+    };
+
+    const mockUsdtBalance: Balance = {
+      assetId: `ethereum-${usdtAddress.toLowerCase()}`,
+      asset: {
+        id: `ethereum-${usdtAddress.toLowerCase()}`,
+        symbol: 'USDT',
+        name: 'Tether USD',
+        type: 'CRYPTOCURRENCY' as any,
+        decimals: 6,
+        contractAddress: usdtAddress,
+        chain: 'ETHEREUM' as any,
+      },
+      amount: '2000000',
+    };
+
+    beforeEach(() => {
+      mockAdapter = {
+        getBalance: vi.fn().mockResolvedValue(mockNativeBalance),
+        getTokenBalances: vi.fn().mockResolvedValue([mockUsdcBalance, mockUsdtBalance]),
+        getTransactions: vi.fn().mockResolvedValue([]),
+        subscribeToBalance: vi.fn().mockResolvedValue(() => {}),
+        subscribeToTransactions: vi.fn().mockResolvedValue(() => {}),
+        getChainInfo: vi.fn().mockReturnValue({ id: chainId, name: 'Ethereum', symbol: 'ETH', decimals: 18, explorer: 'https://etherscan.io' }),
+        isHealthy: vi.fn().mockResolvedValue(true),
+        connect: vi.fn().mockResolvedValue(undefined),
+        disconnect: vi.fn(),
+      } as unknown as IChainAdapter;
+
+      const adapters = new Map<number, IChainAdapter>([[chainId, mockAdapter]]);
+      service = new BalanceService(adapters, {
+        enableCache: true,
+        enableBatching: true,
+        cacheTTL: 300,
+      });
+    });
+
+    it('should return native and ERC20 token balances combined', async () => {
+      const balances = await service.getAllBalances(testAddress, chainId);
+
+      expect(balances).toHaveLength(3);
+      expect(balances[0]).toEqual(mockNativeBalance);
+      expect(balances[1]).toEqual(mockUsdcBalance);
+      expect(balances[2]).toEqual(mockUsdtBalance);
+    });
+
+    it('should call getBalance and getTokenBalances on the adapter', async () => {
+      await service.getAllBalances(testAddress, chainId);
+
+      expect(mockAdapter.getBalance).toHaveBeenCalledWith(testAddress);
+      expect(mockAdapter.getTokenBalances).toHaveBeenCalledWith(testAddress, undefined);
+    });
+
+    it('should pass specific tokens when provided', async () => {
+      const tokens: TokenConfig[] = [
+        { address: usdcAddress, symbol: 'USDC', decimals: 6, name: 'USD Coin' },
+      ];
+
+      await service.getAllBalances(testAddress, chainId, { tokens });
+
+      expect(mockAdapter.getTokenBalances).toHaveBeenCalledWith(testAddress, tokens);
+    });
+
+    it('should return only native balance when token fetch fails', async () => {
+      mockAdapter.getTokenBalances = vi.fn().mockRejectedValue(new Error('Token RPC error'));
+
+      const balances = await service.getAllBalances(testAddress, chainId);
+
+      expect(balances).toHaveLength(1);
+      expect(balances[0]).toEqual(mockNativeBalance);
+    });
+
+    it('should throw when native balance fetch fails', async () => {
+      mockAdapter.getBalance = vi.fn().mockRejectedValue(new Error('RPC down'));
+
+      await expect(
+        service.getAllBalances(testAddress, chainId)
+      ).rejects.toThrow('RPC down');
+    });
+
+    it('should validate address', async () => {
+      await expect(
+        service.getAllBalances('invalid' as Address, chainId)
+      ).rejects.toThrow(ValidationError);
+    });
+
+    it('should validate chain ID', async () => {
+      await expect(
+        service.getAllBalances(testAddress, 999)
+      ).rejects.toThrow(ValidationError);
+    });
+
+    it('should bypass cache with forceFresh option', async () => {
+      // First call
+      await service.getAllBalances(testAddress, chainId);
+      // Second call with forceFresh
+      await service.getAllBalances(testAddress, chainId, { forceFresh: true });
+
+      expect(mockAdapter.getBalance).toHaveBeenCalledTimes(2);
+      expect(mockAdapter.getTokenBalances).toHaveBeenCalledTimes(2);
+    });
+
+    it('should return empty token list when adapter returns no tokens', async () => {
+      mockAdapter.getTokenBalances = vi.fn().mockResolvedValue([]);
+
+      const balances = await service.getAllBalances(testAddress, chainId);
+
+      expect(balances).toHaveLength(1);
+      expect(balances[0]).toEqual(mockNativeBalance);
+    });
+
+    it('should fetch native and tokens in parallel', async () => {
+      let nativeResolved = false;
+      let tokensResolved = false;
+      let nativeStarted = false;
+      let tokensStarted = false;
+
+      mockAdapter.getBalance = vi.fn().mockImplementation(async () => {
+        nativeStarted = true;
+        // If tokens haven't started yet, we're not parallel
+        await new Promise(resolve => setTimeout(resolve, 10));
+        nativeResolved = true;
+        return mockNativeBalance;
+      });
+
+      mockAdapter.getTokenBalances = vi.fn().mockImplementation(async () => {
+        tokensStarted = true;
+        await new Promise(resolve => setTimeout(resolve, 10));
+        tokensResolved = true;
+        return [mockUsdcBalance];
+      });
+
+      await service.getAllBalances(testAddress, chainId);
+
+      // Both should have started (proving parallelism)
+      expect(nativeStarted).toBe(true);
+      expect(tokensStarted).toBe(true);
+      expect(nativeResolved).toBe(true);
+      expect(tokensResolved).toBe(true);
+    });
+  });
+
+  describe('getMultiChainAllBalances', () => {
+    const usdcAddress: Address = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
+
+    const mockEthNative: Balance = {
+      assetId: 'ethereum-native',
+      asset: { id: 'ethereum-native', symbol: 'ETH', name: 'ETH', type: 'CRYPTOCURRENCY' as any, decimals: 18, chain: 'ETHEREUM' as any },
+      amount: '1000000000000000000',
+    };
+
+    const mockEthUsdc: Balance = {
+      assetId: `ethereum-${usdcAddress.toLowerCase()}`,
+      asset: { id: `ethereum-${usdcAddress.toLowerCase()}`, symbol: 'USDC', name: 'USD Coin', type: 'CRYPTOCURRENCY' as any, decimals: 6, contractAddress: usdcAddress, chain: 'ETHEREUM' as any },
+      amount: '1000000',
+    };
+
+    const mockPolyNative: Balance = {
+      assetId: 'polygon-native',
+      asset: { id: 'polygon-native', symbol: 'MATIC', name: 'MATIC', type: 'CRYPTOCURRENCY' as any, decimals: 18, chain: 'POLYGON' as any },
+      amount: '5000000000000000000',
+    };
+
+    beforeEach(() => {
+      const ethAdapter = {
+        getBalance: vi.fn().mockResolvedValue(mockEthNative),
+        getTokenBalances: vi.fn().mockResolvedValue([mockEthUsdc]),
+        getTransactions: vi.fn().mockResolvedValue([]),
+        subscribeToBalance: vi.fn().mockResolvedValue(() => {}),
+        subscribeToTransactions: vi.fn().mockResolvedValue(() => {}),
+        getChainInfo: vi.fn().mockReturnValue({ id: 1, name: 'Ethereum', symbol: 'ETH', decimals: 18, explorer: 'https://etherscan.io' }),
+        isHealthy: vi.fn().mockResolvedValue(true),
+        connect: vi.fn().mockResolvedValue(undefined),
+        disconnect: vi.fn(),
+      } as unknown as IChainAdapter;
+
+      const polyAdapter = {
+        getBalance: vi.fn().mockResolvedValue(mockPolyNative),
+        getTokenBalances: vi.fn().mockResolvedValue([]),
+        getTransactions: vi.fn().mockResolvedValue([]),
+        subscribeToBalance: vi.fn().mockResolvedValue(() => {}),
+        subscribeToTransactions: vi.fn().mockResolvedValue(() => {}),
+        getChainInfo: vi.fn().mockReturnValue({ id: 137, name: 'Polygon', symbol: 'MATIC', decimals: 18, explorer: 'https://polygonscan.com' }),
+        isHealthy: vi.fn().mockResolvedValue(true),
+        connect: vi.fn().mockResolvedValue(undefined),
+        disconnect: vi.fn(),
+      } as unknown as IChainAdapter;
+
+      const adapters = new Map<number, IChainAdapter>([
+        [1, ethAdapter],
+        [137, polyAdapter],
+      ]);
+
+      service = new BalanceService(adapters, {
+        enableCache: true,
+        enableBatching: true,
+        cacheTTL: 300,
+      });
+    });
+
+    it('should fetch all balances across multiple chains', async () => {
+      const result = await service.getMultiChainAllBalances(testAddress, [1, 137]);
+
+      expect(result.balances.get(1)).toHaveLength(2); // ETH native + USDC
+      expect(result.balances.get(137)).toHaveLength(1); // MATIC native only
+      expect(result.errors.size).toBe(0);
+    });
+
+    it('should handle partial chain failures gracefully', async () => {
+      // Create a service where chain 1 fails
+      const failingAdapter = {
+        getBalance: vi.fn().mockRejectedValue(new Error('Chain 1 down')),
+        getTokenBalances: vi.fn().mockResolvedValue([]),
+        getTransactions: vi.fn().mockResolvedValue([]),
+        subscribeToBalance: vi.fn().mockResolvedValue(() => {}),
+        subscribeToTransactions: vi.fn().mockResolvedValue(() => {}),
+        getChainInfo: vi.fn(),
+        isHealthy: vi.fn().mockResolvedValue(false),
+        connect: vi.fn(),
+        disconnect: vi.fn(),
+      } as unknown as IChainAdapter;
+
+      const polyAdapter = {
+        getBalance: vi.fn().mockResolvedValue(mockPolyNative),
+        getTokenBalances: vi.fn().mockResolvedValue([]),
+        getTransactions: vi.fn().mockResolvedValue([]),
+        subscribeToBalance: vi.fn().mockResolvedValue(() => {}),
+        subscribeToTransactions: vi.fn().mockResolvedValue(() => {}),
+        getChainInfo: vi.fn(),
+        isHealthy: vi.fn().mockResolvedValue(true),
+        connect: vi.fn(),
+        disconnect: vi.fn(),
+      } as unknown as IChainAdapter;
+
+      const adapters = new Map<number, IChainAdapter>([
+        [1, failingAdapter],
+        [137, polyAdapter],
+      ]);
+      service = new BalanceService(adapters, { enableCache: false, enableCircuitBreaker: false, enableRetry: false });
+
+      const result = await service.getMultiChainAllBalances(testAddress, [1, 137]);
+
+      expect(result.errors.size).toBe(1);
+      expect(result.errors.get(1)).toBeDefined();
+      expect(result.balances.get(137)).toHaveLength(1);
+    });
+
+    it('should validate address', async () => {
+      await expect(
+        service.getMultiChainAllBalances('invalid' as Address, [1, 137])
+      ).rejects.toThrow(ValidationError);
+    });
+  });
+
   describe('Resource Cleanup', () => {
     it('should destroy cleanly', async () => {
       await service.getBalance(testAddress, chainId);
