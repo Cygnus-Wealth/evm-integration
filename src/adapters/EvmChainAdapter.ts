@@ -14,6 +14,7 @@ import {
   arbitrum,
   optimism,
   base,
+  bsc,
   sepolia,
   Chain as ViemChain
 } from 'viem/chains';
@@ -36,6 +37,21 @@ const ERC20_ABI = parseAbi([
   'function name() view returns (string)',
 ]);
 
+const SPAM_PATTERNS = [
+  /https?:\/\//i,         // URLs in name/symbol
+  /\.com|\.io|\.live|\.xyz|\.finance/i, // Domain patterns
+  /claim|reward|airdrop/i, // Airdrop scam keywords
+  /visit|redeem/i,         // Call-to-action scam keywords
+];
+
+/**
+ * Detects likely spam/scam tokens by name or symbol patterns
+ */
+export function isSpamToken(symbol: string, name: string): boolean {
+  const combined = `${symbol} ${name}`;
+  return SPAM_PATTERNS.some(pattern => pattern.test(combined));
+}
+
 export class EvmChainAdapter implements IChainAdapter {
   private client: PublicClient | null = null;
   private wsClient: PublicClient | null = null;
@@ -54,6 +70,7 @@ export class EvmChainAdapter implements IChainAdapter {
       case 42161: return arbitrum;
       case 10: return optimism;
       case 8453: return base;
+      case 56: return bsc;
       case 11155111: return sepolia;
       default: 
         // Create custom chain for unsupported chains
@@ -129,7 +146,7 @@ export class EvmChainAdapter implements IChainAdapter {
 
   async getTokenBalances(address: Address, tokens?: TokenConfig[]): Promise<Balance[]> {
     const client = await this.ensureConnected();
-    
+
     // Use provided tokens or default to popular tokens from config
     const tokensToCheck = tokens || this.config.tokens?.popular?.map(t => ({
       address: t.address as Address,
@@ -139,6 +156,7 @@ export class EvmChainAdapter implements IChainAdapter {
     })) || [];
 
     const balances: Balance[] = [];
+    const seenAssetIds = new Set<string>();
 
     for (const token of tokensToCheck) {
       try {
@@ -148,6 +166,9 @@ export class EvmChainAdapter implements IChainAdapter {
           functionName: 'balanceOf',
           args: [address],
         }) as bigint;
+
+        // Skip zero-balance tokens
+        if (balance === 0n) continue;
 
         // Get token metadata if not provided
         let decimals = token.decimals;
@@ -178,6 +199,9 @@ export class EvmChainAdapter implements IChainAdapter {
           }) as string;
         }
 
+        // Filter spam/scam tokens by name patterns
+        if (isSpamToken(symbol || '', name || '')) continue;
+
         // Create Asset for this token
         const asset = mapTokenToAsset(
           token.address,
@@ -187,16 +211,15 @@ export class EvmChainAdapter implements IChainAdapter {
           this.config.id
         );
 
-        // Create Balance object
+        // Deduplicate by assetId
+        if (seenAssetIds.has(asset.id)) continue;
+        seenAssetIds.add(asset.id);
+
+        // Create Balance object with human-readable amount
         const tokenBalance: Balance = {
           assetId: asset.id,
           asset: asset,
-          amount: balance.toString(),
-          value: {
-            amount: parseFloat(formatUnits(balance, decimals || 18)),
-            currency: 'USD',
-            timestamp: new Date()
-          }
+          amount: formatUnits(balance, decimals || 18),
         };
 
         balances.push(tokenBalance);

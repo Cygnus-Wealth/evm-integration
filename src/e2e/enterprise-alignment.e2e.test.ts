@@ -149,7 +149,7 @@ describe('E2E: Enterprise Strategy Alignment', () => {
 
       // Amount as string (preserves precision)
       expect(typeof balance.amount).toBe('string');
-      expect(balance.amount).toBe('2500000000000000000');
+      expect(balance.amount).toBe('2.5');
 
       // Value is Price-compatible
       if (balance.value) {

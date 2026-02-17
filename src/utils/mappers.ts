@@ -1,5 +1,5 @@
 import { Asset, Balance, Transaction, AssetType, Chain, TransactionType } from '@cygnus-wealth/data-models';
-import { Address } from 'viem';
+import { Address, formatUnits } from 'viem';
 
 /**
  * Balance data structure returned from blockchain queries
@@ -28,6 +28,8 @@ export function mapChainIdToChain(chainId: number): Chain {
             return Chain.AVALANCHE;
         case 56:
             return Chain.BSC;
+        case 8453:
+            return Chain.BASE;
         default:
             return Chain.OTHER;
     }
@@ -50,6 +52,8 @@ export function mapChainToChainId(chain: Chain): number {
             return 43114;
         case Chain.BSC:
             return 56;
+        case Chain.BASE:
+            return 8453;
         default:
             return 1; // Default to Ethereum mainnet
     }
@@ -75,15 +79,12 @@ export function mapEvmBalanceToBalance(
         chain: chain,
     };
 
+    const formatted = balanceData.formatted || formatUnits(balanceData.value, balanceData.decimals);
+
     return {
         assetId: asset.id,
         asset: asset,
-        amount: balanceData.value.toString(),
-        value: balanceData.formatted ? {
-            amount: parseFloat(balanceData.formatted),
-            currency: 'USD',
-            timestamp: new Date()
-        } : undefined,
+        amount: formatted,
     };
 }
 

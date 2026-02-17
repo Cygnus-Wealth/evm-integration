@@ -519,23 +519,28 @@ export class BalanceService {
     options?: BalanceQueryOptions
   ): Promise<Balance[]> {
     Validators.validateAddress(address);
-
-    // Validate chain ID early
     this.getAdapter(chainId);
 
-    const adapter = this.getAdapter(chainId);
-    const tokens = options?.tokens;
-
-    const fetchTokens = async (): Promise<Balance[]> => {
-      return adapter.getTokenBalances(address, tokens);
-    };
+    const tokens = options?.tokens || [];
 
     const [nativeBalance, tokenBalances] = await Promise.all([
       this.getBalance(address, chainId, options),
-      fetchTokens().catch(() => [] as Balance[]),
+      tokens.length > 0
+        ? this.getTokenBalances(address, chainId, tokens, options).catch(() => [] as Balance[])
+        : this.getAdapter(chainId).getTokenBalances(address).catch(() => [] as Balance[]),
     ]);
 
-    return [nativeBalance, ...tokenBalances];
+    // Deduplicate by assetId
+    const seen = new Set<string>();
+    const results: Balance[] = [];
+    for (const b of [nativeBalance, ...tokenBalances]) {
+      if (!seen.has(b.assetId)) {
+        seen.add(b.assetId);
+        results.push(b);
+      }
+    }
+
+    return results;
   }
 
   /**
