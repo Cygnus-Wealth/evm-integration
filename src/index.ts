@@ -55,6 +55,22 @@ export const chains = {
 };
 
 // ============================================================================
+// SERVICES
+// ============================================================================
+
+// Balance Service - High-level balance operations with caching and resilience
+export { BalanceService } from './services/BalanceService.js';
+export type {
+  BalanceQueryOptions,
+  MultiChainBalanceOptions,
+  MultiChainBalance,
+  MultiChainAllBalances,
+  BalanceSubscriptionOptions,
+  BalanceServiceConfig,
+  BalanceServiceStats,
+} from './services/BalanceService.js';
+
+// ============================================================================
 // PROVIDERS (Advanced Usage)
 // ============================================================================
 

@@ -69,6 +69,21 @@ export interface MultiChainBalance {
 }
 
 /**
+ * Multi-chain all-balances result (native + ERC20)
+ */
+export interface MultiChainAllBalances {
+  /**
+   * All balances (native + tokens) by chain ID
+   */
+  balances: Map<number, Balance[]>;
+
+  /**
+   * Errors by chain ID (if any)
+   */
+  errors: Map<number, Error>;
+}
+
+/**
  * Balance subscription options
  */
 export interface BalanceSubscriptionOptions {
@@ -488,6 +503,78 @@ export class BalanceService {
       balances,
       errors,
     };
+  }
+
+  /**
+   * Fetches all balances (native + ERC20 tokens) for an address on a specific chain
+   * @param address - Wallet address
+   * @param chainId - Chain ID
+   * @param options - Query options (tokens to query, forceFresh)
+   * @returns Array of balances: native first, then token balances
+   * @throws ValidationError if address or chainId invalid
+   */
+  async getAllBalances(
+    address: Address,
+    chainId: number,
+    options?: BalanceQueryOptions
+  ): Promise<Balance[]> {
+    Validators.validateAddress(address);
+
+    // Validate chain ID early
+    this.getAdapter(chainId);
+
+    const adapter = this.getAdapter(chainId);
+    const tokens = options?.tokens;
+
+    const fetchTokens = async (): Promise<Balance[]> => {
+      return adapter.getTokenBalances(address, tokens);
+    };
+
+    const [nativeBalance, tokenBalances] = await Promise.all([
+      this.getBalance(address, chainId, options),
+      fetchTokens().catch(() => [] as Balance[]),
+    ]);
+
+    return [nativeBalance, ...tokenBalances];
+  }
+
+  /**
+   * Fetches all balances (native + ERC20 tokens) across multiple chains
+   * @param address - Wallet address
+   * @param chainIds - Array of chain IDs
+   * @param options - Query options
+   * @returns Multi-chain all-balances result
+   */
+  async getMultiChainAllBalances(
+    address: Address,
+    chainIds: number[],
+    options?: MultiChainBalanceOptions
+  ): Promise<MultiChainAllBalances> {
+    Validators.validateAddress(address);
+
+    const balances = new Map<number, Balance[]>();
+    const errors = new Map<number, Error>();
+
+    const results = await Promise.allSettled(
+      chainIds.map(async (chainId) => ({
+        chainId,
+        balances: await this.getAllBalances(address, chainId, {
+          forceFresh: options?.forceFresh,
+        }),
+      }))
+    );
+
+    for (const result of results) {
+      if (result.status === 'fulfilled') {
+        balances.set(result.value.chainId, result.value.balances);
+      } else {
+        // Extract chainId from the error context
+        const idx = results.indexOf(result);
+        errors.set(chainIds[idx], result.reason);
+      }
+    }
+
+    return { balances, errors };
   }
 
   /**
