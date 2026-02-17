@@ -70,6 +70,23 @@ export type {
   BalanceServiceStats,
 } from './services/BalanceService.js';
 
+// DeFi Service - Read DeFi protocol positions (Beefy, Aave, etc.)
+export { DeFiService } from './defi/DeFiService.js';
+export type {
+  DeFiQueryOptions,
+  DeFiServiceStats,
+} from './defi/DeFiService.js';
+export type {
+  IDeFiProtocol,
+  DeFiPositions,
+  MultiChainDeFiPositions,
+  DeFiServiceConfig,
+} from './defi/types.js';
+export { BeefyAdapter } from './defi/protocols/BeefyAdapter.js';
+export type { BeefyAdapterOptions } from './defi/protocols/BeefyAdapter.js';
+export { AaveAdapter, AAVE_V3_DEPLOYMENTS } from './defi/protocols/AaveAdapter.js';
+export type { AaveAdapterOptions } from './defi/protocols/AaveAdapter.js';
+
 // ============================================================================
 // PROVIDERS (Advanced Usage)
 // ============================================================================
