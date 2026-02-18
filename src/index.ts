@@ -70,6 +70,15 @@ export type {
   BalanceServiceStats,
 } from './services/BalanceService.js';
 
+// Token Discovery Service - Dynamic ERC20 token discovery via Alchemy API
+export { TokenDiscoveryService } from './services/TokenDiscoveryService.js';
+export type {
+  DiscoveredToken,
+  TokenDiscoveryError,
+  TokenDiscoveryResult,
+  MultiChainTokenDiscoveryResult,
+} from './types/TokenDiscovery.js';
+
 // DeFi Service - Read DeFi protocol positions (Beefy, Aave, etc.)
 export { DeFiService } from './defi/DeFiService.js';
 export type {

@@ -28,6 +28,7 @@ import {
 import { ChainConfig } from '../types/ChainConfig.js';
 import { Balance, Transaction, AssetType, Chain as DataModelChain } from '@cygnus-wealth/data-models';
 import { mapChainIdToChain, mapEvmBalanceToBalance, mapTokenToAsset } from '../utils/mappers.js';
+import type { TokenDiscoveryResult, TokenDiscoveryError, DiscoveredToken } from '../types/TokenDiscovery.js';
 
 // ERC20 ABI for balance queries
 const ERC20_ABI = parseAbi([
@@ -317,6 +318,97 @@ export class EvmChainAdapter implements IChainAdapter {
       decimals: this.config.decimals,
       explorer: this.config.explorer,
     };
+  }
+
+  async discoverTokens(address: Address): Promise<TokenDiscoveryResult> {
+    const client = await this.ensureConnected();
+    const result: TokenDiscoveryResult = {
+      address,
+      chainId: this.config.id,
+      tokens: [],
+      errors: [],
+    };
+
+    let alchemyResponse: {
+      address: string;
+      tokenBalances: Array<{
+        contractAddress: Address;
+        tokenBalance: string | null;
+        error: string | null;
+      }>;
+    };
+
+    try {
+      alchemyResponse = await (client as any).request({
+        method: 'alchemy_getTokenBalances',
+        params: [address, 'DEFAULT_TOKENS'],
+      });
+    } catch (err: any) {
+      result.errors.push({
+        chainId: this.config.id,
+        message: err.message || 'Token discovery API unavailable',
+        code: 'DISCOVERY_API_UNAVAILABLE',
+      });
+      return result;
+    }
+
+    for (const entry of alchemyResponse.tokenBalances) {
+      // Report Alchemy-level errors
+      if (entry.error) {
+        result.errors.push({
+          contractAddress: entry.contractAddress,
+          chainId: this.config.id,
+          message: entry.error,
+          code: 'TOKEN_BALANCE_ERROR',
+        });
+        continue;
+      }
+
+      // Skip zero-balance tokens
+      const rawBalance = BigInt(entry.tokenBalance || '0');
+      if (rawBalance === 0n) continue;
+
+      // Fetch token metadata
+      try {
+        const decimals = await client.readContract({
+          address: entry.contractAddress,
+          abi: ERC20_ABI,
+          functionName: 'decimals',
+        }) as number;
+
+        const symbol = await client.readContract({
+          address: entry.contractAddress,
+          abi: ERC20_ABI,
+          functionName: 'symbol',
+        }) as string;
+
+        const name = await client.readContract({
+          address: entry.contractAddress,
+          abi: ERC20_ABI,
+          functionName: 'name',
+        }) as string;
+
+        // Filter spam tokens
+        if (isSpamToken(symbol || '', name || '')) continue;
+
+        result.tokens.push({
+          contractAddress: entry.contractAddress,
+          balance: rawBalance.toString(),
+          symbol,
+          name,
+          decimals,
+        });
+      } catch (err: any) {
+        result.errors.push({
+          contractAddress: entry.contractAddress,
+          chainId: this.config.id,
+          message: err.message || 'Failed to fetch token metadata',
+          code: 'METADATA_FETCH_FAILED',
+        });
+      }
+    }
+
+    return result;
   }
 
   async isHealthy(): Promise<boolean> {
