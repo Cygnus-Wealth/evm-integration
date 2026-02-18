@@ -103,6 +103,39 @@ export type {
 } from './providers/EnhancedWebSocketProvider.js';
 
 // ============================================================================
+// RPC INFRASTRUCTURE (Shared — importable by sol-integration)
+// ============================================================================
+
+export {
+  RpcCircuitBreakerManager,
+  RpcRateLimiter,
+  RpcFallbackChain,
+  RpcHealthMonitor,
+  ProviderMetrics,
+  DEFAULT_RPC_CIRCUIT_BREAKER_CONFIG,
+  DEFAULT_TOTAL_TIMEOUT_MS,
+  DEFAULT_MAX_RETRY_ATTEMPTS,
+  DEFAULT_HEALTH_CHECK_INTERVAL_MS,
+  METRICS_ROLLING_WINDOW_MS,
+  NON_RETRIABLE_STATUS_CODES,
+} from './rpc/index.js';
+
+export type {
+  RpcEndpoint,
+  RpcProviderConfig,
+  CircuitBreakerKey,
+  RpcCircuitBreakerConfig,
+  ProviderHealthStatus,
+  ProviderHealthResult,
+  LatencyPercentiles,
+  ProviderMetricsSnapshot,
+  RpcCallResult,
+  RpcCallFn,
+  RpcHealthCheckFn,
+  RpcHealthMonitorConfig,
+} from './rpc/index.js';
+
+// ============================================================================
 // TYPE RE-EXPORTS
 // ============================================================================
 
