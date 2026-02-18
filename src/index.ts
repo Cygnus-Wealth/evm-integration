@@ -145,6 +145,48 @@ export type {
 } from './rpc/index.js';
 
 // ============================================================================
+// SUBSCRIPTION INFRASTRUCTURE
+// ============================================================================
+
+// Subscription Service - Real-time WebSocket subscriptions with polling fallback
+export {
+  SubscriptionService,
+  WebSocketConnectionManager,
+  NewHeadsSubscription,
+  TransferLogsSubscription,
+  PollManager,
+  EventBus,
+  DEFAULT_CHAIN_ENDPOINTS,
+  SubscriptionEventType,
+  ERC20_TRANSFER_TOPIC,
+  DEFAULT_WS_CONNECTION_CONFIG,
+  DEFAULT_POLL_CONFIG,
+  DEFAULT_SUBSCRIPTION_CONFIG,
+} from './subscriptions/index.js';
+
+export type {
+  ISubscriptionService,
+  SubscriptionHandle,
+  SubscriptionInfo,
+  SubscriptionType,
+  SubscriptionStatus,
+  SubscriptionServiceConfig,
+  WebSocketConnectionConfig,
+  PollManagerConfig,
+  ConnectionInfo,
+  ConnectionStatus,
+  TransportType,
+  LiveBalanceUpdate,
+  LiveTransferEvent,
+  LiveBlock,
+  LivePendingTransaction,
+  LiveContractEvent,
+  SubscriptionEvent,
+  EventListener as SubscriptionEventListener,
+  ChainWsEndpoint,
+} from './subscriptions/index.js';
+
+// ============================================================================
 // TYPE RE-EXPORTS
 // ============================================================================
 
