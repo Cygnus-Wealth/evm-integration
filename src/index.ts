@@ -54,6 +54,19 @@ export const chains = {
   sepolia: sepoliaConfig,
 };
 
+// Factory - Create fully wired EvmIntegration with RPC fallback chains
+export { createEvmIntegration, EvmIntegration } from './createEvmIntegration.js';
+export type { RpcProviderConfig, ChainRpcConfig } from './createEvmIntegration.js';
+
+// RPC Fallback Chain - Per-chain RPC endpoint orchestration
+export { RpcFallbackChain } from './resilience/RpcFallbackChain.js';
+export type {
+  RpcEndpoint,
+  RpcFallbackConfig,
+  RpcFallbackResult,
+  EndpointStats,
+} from './resilience/RpcFallbackChain.js';
+
 // ============================================================================
 // SERVICES
 // ============================================================================
