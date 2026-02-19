@@ -10,3 +10,5 @@ export { BeefyAdapter } from './protocols/BeefyAdapter.js';
 export type { BeefyAdapterOptions } from './protocols/BeefyAdapter.js';
 export { AaveAdapter, AAVE_V3_DEPLOYMENTS } from './protocols/AaveAdapter.js';
 export type { AaveAdapterOptions } from './protocols/AaveAdapter.js';
+export { CurveAdapter } from './protocols/CurveAdapter.js';
+export type { CurveAdapterOptions } from './protocols/CurveAdapter.js';
