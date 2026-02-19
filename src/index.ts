@@ -95,6 +95,8 @@ export { BeefyAdapter } from './defi/protocols/BeefyAdapter.js';
 export type { BeefyAdapterOptions } from './defi/protocols/BeefyAdapter.js';
 export { AaveAdapter, AAVE_V3_DEPLOYMENTS } from './defi/protocols/AaveAdapter.js';
 export type { AaveAdapterOptions } from './defi/protocols/AaveAdapter.js';
+export { CurveAdapter } from './defi/protocols/CurveAdapter.js';
+export type { CurveAdapterOptions } from './defi/protocols/CurveAdapter.js';
 
 // ============================================================================
 // PROVIDERS (Advanced Usage)
