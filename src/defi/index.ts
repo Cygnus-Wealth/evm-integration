@@ -12,3 +12,5 @@ export { AaveAdapter, AAVE_V3_DEPLOYMENTS } from './protocols/AaveAdapter.js';
 export type { AaveAdapterOptions } from './protocols/AaveAdapter.js';
 export { CurveAdapter } from './protocols/CurveAdapter.js';
 export type { CurveAdapterOptions } from './protocols/CurveAdapter.js';
+export { UniswapV3Adapter, UNISWAP_V3_DEPLOYMENTS } from './protocols/UniswapV3Adapter.js';
+export type { UniswapV3AdapterOptions } from './protocols/UniswapV3Adapter.js';
