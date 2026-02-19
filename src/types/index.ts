@@ -16,3 +16,20 @@ export {
     TransactionType,
     LendingPositionType,
 } from '@cygnus-wealth/data-models';
+
+// Account-attributed types (Phase 3: multi-wallet multi-account)
+export type {
+    AccountId,
+    AddressRequest,
+    AccountBalance,
+    AccountBalanceList,
+    AccountTransaction,
+    AccountTransactionList,
+    AccountTokenBalance,
+    AccountTokenList,
+    AccountNFT,
+    AccountNFTList,
+    AccountDeFiPosition,
+    AccountDeFiPositionList,
+    AccountError,
+} from './account.js';
