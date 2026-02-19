@@ -9,6 +9,8 @@ export { NewHeadsSubscription } from './NewHeadsSubscription.js';
 export { TransferLogsSubscription } from './TransferLogsSubscription.js';
 export { PollManager } from './PollManager.js';
 export { EventBus } from './EventBus.js';
+export { AccountSubscriptionService } from './AccountSubscriptionService.js';
+export type { AccountLiveBalanceUpdate, AccountSubscriptionHandle } from './AccountSubscriptionService.js';
 
 export type {
   ISubscriptionService,

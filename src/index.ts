@@ -99,6 +99,14 @@ export { CurveAdapter } from './defi/protocols/CurveAdapter.js';
 export type { CurveAdapterOptions } from './defi/protocols/CurveAdapter.js';
 
 // ============================================================================
+// ACCOUNT-ATTRIBUTED SERVICES (Phase 3: multi-wallet multi-account)
+// ============================================================================
+
+export { AccountBalanceService } from './services/AccountBalanceService.js';
+export { AccountTransactionService } from './services/AccountTransactionService.js';
+export { AccountDeFiService } from './services/AccountDeFiService.js';
+
+// ============================================================================
 // PROVIDERS (Advanced Usage)
 // ============================================================================
 
@@ -158,6 +166,7 @@ export {
   TransferLogsSubscription,
   PollManager,
   EventBus,
+  AccountSubscriptionService,
   DEFAULT_CHAIN_ENDPOINTS,
   SubscriptionEventType,
   ERC20_TRANSFER_TOPIC,
@@ -186,6 +195,8 @@ export type {
   SubscriptionEvent,
   EventListener as SubscriptionEventListener,
   ChainWsEndpoint,
+  AccountLiveBalanceUpdate,
+  AccountSubscriptionHandle,
 } from './subscriptions/index.js';
 
 // ============================================================================
