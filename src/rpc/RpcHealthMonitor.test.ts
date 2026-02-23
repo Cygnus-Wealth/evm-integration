@@ -2,14 +2,20 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { RpcHealthMonitor, RpcHealthCheckFn } from './RpcHealthMonitor';
 import { RpcCircuitBreakerManager } from './RpcCircuitBreakerManager';
 import { ProviderMetrics } from './ProviderMetrics';
-import type { RpcEndpoint } from './types';
+import {
+  RpcProviderRole,
+  RpcProviderType,
+} from '@cygnus-wealth/rpc-infrastructure';
+import type { RpcEndpointConfig } from '@cygnus-wealth/rpc-infrastructure';
 
-function makeEndpoint(provider: string, url?: string): RpcEndpoint {
+function makeEndpoint(provider: string, url?: string): RpcEndpointConfig {
   return {
     url: url ?? `https://${provider}.example.com`,
     provider,
+    role: RpcProviderRole.PRIMARY,
+    type: RpcProviderType.MANAGED,
     rateLimitRps: 25,
-    priority: 0,
+    timeoutMs: 5000,
   };
 }
 
@@ -127,6 +133,35 @@ describe('RpcHealthMonitor', () => {
       await vi.advanceTimersByTimeAsync(5000);
       // Should not have been called again
       expect(mockHealthCheck).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('with HealthCheckConfig from package', () => {
+    it('should accept HealthCheckConfig for interval', async () => {
+      const monitorWithConfig = new RpcHealthMonitor(cbManager, metrics, {
+        healthCheckFn: mockHealthCheck,
+        healthCheck: {
+          intervalMs: 2000,
+          timeoutMs: 3000,
+          method: 'eth_blockNumber',
+        },
+      });
+
+      monitorWithConfig.registerEndpoint(1, makeEndpoint('alchemy'));
+      monitorWithConfig.start();
+
+      await vi.advanceTimersByTimeAsync(0);
+      expect(mockHealthCheck).toHaveBeenCalledTimes(1);
+
+      // Should NOT fire at 1000ms (interval is 2000ms)
+      await vi.advanceTimersByTimeAsync(1000);
+      expect(mockHealthCheck).toHaveBeenCalledTimes(1);
+
+      // Should fire at 2000ms
+      await vi.advanceTimersByTimeAsync(1000);
+      expect(mockHealthCheck).toHaveBeenCalledTimes(2);
+
+      monitorWithConfig.stop();
     });
   });
 

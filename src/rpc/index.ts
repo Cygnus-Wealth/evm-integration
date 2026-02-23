@@ -2,31 +2,40 @@
  * RPC Infrastructure
  *
  * Shared RPC provider fallback chain components.
- * All classes are exported for sol-integration to import or duplicate.
+ * Configuration types are from @cygnus-wealth/rpc-infrastructure.
  *
  * @module rpc
  */
 
-// Types
+// Re-exported configuration types from package
+export {
+  RpcProviderRole,
+  RpcProviderType,
+} from '@cygnus-wealth/rpc-infrastructure';
+
 export type {
-  RpcEndpoint,
+  RpcEndpointConfig,
+  ChainRpcConfig,
   RpcProviderConfig,
-  CircuitBreakerKey,
-  RpcCircuitBreakerConfig,
+  CircuitBreakerConfig,
+  RetryConfig,
+  HealthCheckConfig,
+  PrivacyConfig,
+  UserRpcEndpoint,
+  UserRpcConfig,
+} from '@cygnus-wealth/rpc-infrastructure';
+
+// Local runtime types
+export type {
   ProviderHealthStatus,
   ProviderHealthResult,
   LatencyPercentiles,
   ProviderMetricsSnapshot,
-  RpcCallResult,
 } from './types.js';
 
 export {
-  DEFAULT_RPC_CIRCUIT_BREAKER_CONFIG,
-  DEFAULT_TOTAL_TIMEOUT_MS,
-  DEFAULT_MAX_RETRY_ATTEMPTS,
   DEFAULT_HEALTH_CHECK_INTERVAL_MS,
   METRICS_ROLLING_WINDOW_MS,
-  NON_RETRIABLE_STATUS_CODES,
 } from './types.js';
 
 // Circuit Breaker Manager
@@ -35,9 +44,12 @@ export { RpcCircuitBreakerManager } from './RpcCircuitBreakerManager.js';
 // Rate Limiter
 export { RpcRateLimiter } from './RpcRateLimiter.js';
 
+// Tier Rotator
+export { TierRotator } from './TierRotator.js';
+
 // Fallback Chain
 export { RpcFallbackChain } from './RpcFallbackChain.js';
-export type { RpcCallFn } from './RpcFallbackChain.js';
+export type { RpcCallFn, RpcCallResult } from './RpcFallbackChain.js';
 
 // Health Monitor
 export { RpcHealthMonitor } from './RpcHealthMonitor.js';

@@ -47,6 +47,7 @@
   },
   "dependencies": {
     "@cygnus-wealth/data-models": "^1.2.0",
+    "@cygnus-wealth/rpc-infrastructure": "^1.0.1",
     "viem": "^2.32.1"
   }
 }
