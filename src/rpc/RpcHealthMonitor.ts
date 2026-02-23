@@ -1,19 +1,17 @@
 /**
  * RPC Health Monitor
  *
- * Background ping per provider per chain (60s interval default).
- * Uses eth_blockNumber for EVM health checks.
+ * Background ping per provider per chain.
+ * Uses types from @cygnus-wealth/rpc-infrastructure.
  *
  * @module rpc/RpcHealthMonitor
  */
 
 import { RpcCircuitBreakerManager } from './RpcCircuitBreakerManager.js';
 import { ProviderMetrics } from './ProviderMetrics.js';
-import {
-  RpcEndpoint,
-  ProviderHealthResult,
-  DEFAULT_HEALTH_CHECK_INTERVAL_MS,
-} from './types.js';
+import type { RpcEndpointConfig, HealthCheckConfig } from '@cygnus-wealth/rpc-infrastructure';
+import type { ProviderHealthResult } from './types.js';
+import { DEFAULT_HEALTH_CHECK_INTERVAL_MS } from './types.js';
 
 /**
  * Function that performs a health check against an endpoint URL.
@@ -24,11 +22,12 @@ export type RpcHealthCheckFn = (endpointUrl: string) => Promise<bigint>;
 export interface RpcHealthMonitorConfig {
   healthCheckIntervalMs?: number;
   healthCheckFn: RpcHealthCheckFn;
+  healthCheck?: HealthCheckConfig;
 }
 
 interface RegisteredEndpoint {
   chainId: number;
-  endpoint: RpcEndpoint;
+  endpoint: RpcEndpointConfig;
 }
 
 export class RpcHealthMonitor {
@@ -47,11 +46,13 @@ export class RpcHealthMonitor {
   ) {
     this.cbManager = cbManager;
     this.metrics = metrics;
-    this.intervalMs = config.healthCheckIntervalMs ?? DEFAULT_HEALTH_CHECK_INTERVAL_MS;
+    this.intervalMs = config.healthCheck?.intervalMs
+      ?? config.healthCheckIntervalMs
+      ?? DEFAULT_HEALTH_CHECK_INTERVAL_MS;
     this.healthCheckFn = config.healthCheckFn;
   }
 
-  registerEndpoint(chainId: number, endpoint: RpcEndpoint): void {
+  registerEndpoint(chainId: number, endpoint: RpcEndpointConfig): void {
     const key = this.makeKey(chainId, endpoint.provider);
     this.registered.set(key, { chainId, endpoint });
     this.results.set(key, {

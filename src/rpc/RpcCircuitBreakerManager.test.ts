@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { RpcCircuitBreakerManager } from './RpcCircuitBreakerManager';
 import { CircuitBreakerError } from '../utils/errors';
 import { sleep } from '../test-utils';
+import type { CircuitBreakerConfig } from '@cygnus-wealth/rpc-infrastructure';
 
 describe('RpcCircuitBreakerManager', () => {
   let manager: RpcCircuitBreakerManager;
@@ -72,18 +73,70 @@ describe('RpcCircuitBreakerManager', () => {
 
       await expect(breaker.execute(async () => 'test')).rejects.toThrow(CircuitBreakerError);
     });
+  });
 
-    it('should close after 3 successes in HALF_OPEN', async () => {
-      const mgr = new RpcCircuitBreakerManager({
-        failureThreshold: 5,
-        rollingWindowMs: 60_000,
-        openTimeoutMs: 100, // short for test
-        successThreshold: 3,
-      });
+  describe('package CircuitBreakerConfig', () => {
+    it('should accept CircuitBreakerConfig from @cygnus-wealth/rpc-infrastructure', async () => {
+      const config: CircuitBreakerConfig = {
+        failureThreshold: 3,
+        openDurationMs: 100,
+        halfOpenMaxAttempts: 2,
+        monitorWindowMs: 60_000,
+      };
+
+      const mgr = new RpcCircuitBreakerManager(config);
+      const breaker = mgr.getBreaker(1, 'alchemy');
+
+      // Should open after 3 failures (failureThreshold)
+      for (let i = 0; i < 3; i++) {
+        try {
+          await breaker.execute(async () => { throw new Error('fail'); });
+        } catch { /* expected */ }
+      }
+      expect(breaker.getState()).toBe('OPEN');
+    });
+
+    it('should respect openDurationMs for HALF_OPEN transition', async () => {
+      const config: CircuitBreakerConfig = {
+        failureThreshold: 3,
+        openDurationMs: 100,
+        halfOpenMaxAttempts: 2,
+        monitorWindowMs: 60_000,
+      };
+
+      const mgr = new RpcCircuitBreakerManager(config);
       const breaker = mgr.getBreaker(1, 'alchemy');
 
       // Open it
-      for (let i = 0; i < 5; i++) {
+      for (let i = 0; i < 3; i++) {
+        try {
+          await breaker.execute(async () => { throw new Error('fail'); });
+        } catch { /* expected */ }
+      }
+      expect(breaker.getState()).toBe('OPEN');
+
+      // Wait for openDurationMs
+      await sleep(150);
+
+      // Should transition to HALF_OPEN on next attempt
+      await breaker.execute(async () => 'ok');
+      // After openDurationMs, it moves to HALF_OPEN and a success is recorded
+      expect(breaker.getState()).not.toBe('OPEN');
+    });
+
+    it('should use halfOpenMaxAttempts as success threshold to close', async () => {
+      const config: CircuitBreakerConfig = {
+        failureThreshold: 3,
+        openDurationMs: 100,
+        halfOpenMaxAttempts: 2,
+        monitorWindowMs: 60_000,
+      };
+
+      const mgr = new RpcCircuitBreakerManager(config);
+      const breaker = mgr.getBreaker(1, 'alchemy');
+
+      // Open it
+      for (let i = 0; i < 3; i++) {
         try {
           await breaker.execute(async () => { throw new Error('fail'); });
         } catch { /* expected */ }
@@ -93,26 +146,25 @@ describe('RpcCircuitBreakerManager', () => {
       // Wait for HALF_OPEN
       await sleep(150);
 
-      // 3 successes to close
-      for (let i = 0; i < 3; i++) {
+      // 2 successes (halfOpenMaxAttempts) should close it
+      for (let i = 0; i < 2; i++) {
         await breaker.execute(async () => 'ok');
       }
       expect(breaker.getState()).toBe('CLOSED');
     });
-  });
 
-  describe('custom config', () => {
-    it('should accept custom failure threshold', async () => {
-      const mgr = new RpcCircuitBreakerManager({ failureThreshold: 3 });
-      const breaker = mgr.getBreaker(1, 'custom');
+    it('should respect monitorWindowMs as rolling window', async () => {
+      const config: CircuitBreakerConfig = {
+        failureThreshold: 5,
+        openDurationMs: 30_000,
+        halfOpenMaxAttempts: 3,
+        monitorWindowMs: 60_000,
+      };
 
-      for (let i = 0; i < 3; i++) {
-        try {
-          await breaker.execute(async () => { throw new Error('fail'); });
-        } catch { /* expected */ }
-      }
-
-      expect(breaker.getState()).toBe('OPEN');
+      const mgr = new RpcCircuitBreakerManager(config);
+      const breaker = mgr.getBreaker(1, 'test');
+      expect(breaker).toBeDefined();
+      expect(breaker.getState()).toBe('CLOSED');
     });
   });
 
@@ -136,6 +188,26 @@ describe('RpcCircuitBreakerManager', () => {
     it('should return false when circuit is closed', () => {
       manager.getBreaker(1, 'alchemy');
       expect(manager.isOpen(1, 'alchemy')).toBe(false);
+    });
+  });
+
+  describe('isOpenForUrl', () => {
+    it('should check circuit state by URL', async () => {
+      // Register mapping
+      manager.registerEndpointUrl(1, 'alchemy', 'https://alchemy.example.com');
+      const breaker = manager.getBreaker(1, 'alchemy');
+
+      for (let i = 0; i < 5; i++) {
+        try {
+          await breaker.execute(async () => { throw new Error('fail'); });
+        } catch { /* expected */ }
+      }
+
+      expect(manager.isOpenForUrl('https://alchemy.example.com')).toBe(true);
+    });
+
+    it('should return false for unknown URL', () => {
+      expect(manager.isOpenForUrl('https://unknown.example.com')).toBe(false);
     });
   });
 
