@@ -11,7 +11,7 @@ export default defineConfig({
         ],
         server: {
             deps: {
-                inline: ['@cygnus-wealth/data-models'],
+                inline: ['@cygnus-wealth/data-models', '@cygnus-wealth/rpc-infrastructure'],
             },
         },
     },

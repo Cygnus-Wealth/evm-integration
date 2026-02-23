@@ -136,6 +136,15 @@ export {
   RpcProviderType,
   DEFAULT_HEALTH_CHECK_INTERVAL_MS,
   METRICS_ROLLING_WINDOW_MS,
+  // Decentralized-first defaults
+  getDecentralizedRpcConfig,
+  getChainRpcConfig,
+  assertNoBundledApiKeys,
+  SUPPORTED_CHAIN_IDS,
+  POKT_ENDPOINTS,
+  API_KEY_PATTERNS,
+  // Build-time assertions
+  assertNoBundledSecrets,
 } from './rpc/index.js';
 
 export type {

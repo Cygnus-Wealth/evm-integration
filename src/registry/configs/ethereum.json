@@ -6,6 +6,7 @@
   "explorer": "https://etherscan.io",
   "endpoints": {
     "http": [
+      "https://eth-pokt.nodies.app",
       "https://ethereum-rpc.publicnode.com",
       "https://eth.llamarpc.com",
       "https://rpc.ankr.com/eth",

@@ -21,6 +21,7 @@
     "verify:websocket": "tsx src/e2e/websocketVerification.ts",
     "demo": "cd demo-ui && npm install && npm run dev",
     "dev:ui": "cd test-ui && npm install && npm run dev",
+    "build:check": "tsup && tsx scripts/check-bundle-secrets.ts",
     "prepublishOnly": "npm run build"
   },
   "keywords": [
