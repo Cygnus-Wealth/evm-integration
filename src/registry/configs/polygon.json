@@ -6,6 +6,7 @@
   "explorer": "https://polygonscan.com",
   "endpoints": {
     "http": [
+      "https://polygon-pokt.nodies.app",
       "https://polygon-rpc.com",
       "https://polygon-bor-rpc.publicnode.com",
       "https://rpc.ankr.com/polygon",

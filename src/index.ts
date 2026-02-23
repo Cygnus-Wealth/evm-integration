@@ -137,6 +137,15 @@ export {
   DEFAULT_HEALTH_CHECK_INTERVAL_MS,
   METRICS_ROLLING_WINDOW_MS,
   NON_RETRIABLE_STATUS_CODES,
+  // Decentralized-first defaults
+  getDecentralizedRpcConfig,
+  getChainRpcConfig,
+  assertNoBundledApiKeys,
+  SUPPORTED_CHAIN_IDS,
+  POKT_ENDPOINTS,
+  API_KEY_PATTERNS,
+  // Build-time assertions
+  assertNoBundledSecrets,
 } from './rpc/index.js';
 
 export type {
@@ -153,6 +162,24 @@ export type {
   RpcHealthCheckFn,
   RpcHealthMonitorConfig,
 } from './rpc/index.js';
+
+// Re-export canonical RPC infrastructure types from @cygnus-wealth/rpc-infrastructure
+export {
+  RpcProviderRole,
+  RpcProviderType,
+} from '@cygnus-wealth/rpc-infrastructure';
+
+export type {
+  RpcEndpointConfig,
+  ChainRpcConfig,
+  RpcProviderConfig as InfraRpcProviderConfig,
+  CircuitBreakerConfig as InfraCircuitBreakerConfig,
+  RetryConfig,
+  HealthCheckConfig,
+  UserRpcEndpoint,
+  UserRpcConfig,
+  PrivacyConfig,
+} from '@cygnus-wealth/rpc-infrastructure';
 
 // ============================================================================
 // SUBSCRIPTION INFRASTRUCTURE

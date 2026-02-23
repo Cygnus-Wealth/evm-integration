@@ -6,6 +6,7 @@
   "explorer": "https://arbiscan.io",
   "endpoints": {
     "http": [
+      "https://arb-pokt.nodies.app",
       "https://arb1.arbitrum.io/rpc",
       "https://arbitrum-one-rpc.publicnode.com",
       "https://rpc.ankr.com/arbitrum"

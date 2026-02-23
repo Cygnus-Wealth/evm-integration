@@ -45,3 +45,16 @@ export type { RpcHealthCheckFn, RpcHealthMonitorConfig } from './RpcHealthMonito
 
 // Provider Metrics
 export { ProviderMetrics } from './ProviderMetrics.js';
+
+// Decentralized-first RPC defaults
+export {
+  getDecentralizedRpcConfig,
+  getChainRpcConfig,
+  assertNoBundledApiKeys,
+  SUPPORTED_CHAIN_IDS,
+  POKT_ENDPOINTS,
+  API_KEY_PATTERNS,
+} from './decentralized-defaults.js';
+
+// Build-time assertions
+export { assertNoBundledSecrets } from './build-assertions.js';

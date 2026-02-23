@@ -7,6 +7,6 @@ export default defineConfig({
   splitting: false,
   sourcemap: true,
   clean: true,
-  external: ['viem', '@cygnus-wealth/data-models'],
+  external: ['viem', '@cygnus-wealth/data-models', '@cygnus-wealth/rpc-infrastructure'],
   treeshake: true,
 });

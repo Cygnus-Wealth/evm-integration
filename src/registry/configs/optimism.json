@@ -6,6 +6,7 @@
   "explorer": "https://optimistic.etherscan.io",
   "endpoints": {
     "http": [
+      "https://op-pokt.nodies.app",
       "https://mainnet.optimism.io",
       "https://optimism-rpc.publicnode.com",
       "https://rpc.ankr.com/optimism"
