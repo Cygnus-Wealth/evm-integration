@@ -399,7 +399,7 @@ describe('E2E: Enterprise Strategy Alignment', () => {
 
       const failAdapter = createCompliantAdapter(137, Chain.POLYGON, 'MATIC');
       (failAdapter.getBalance as ReturnType<typeof vi.fn>).mockRejectedValue(
-        ConnectionError.timeout('https://polygon-rpc.com', 5000)
+        ConnectionError.timeout('https://polygon-bor-rpc.publicnode.com', 5000)
       );
 
       const adapters = new Map<number, IChainAdapter>([

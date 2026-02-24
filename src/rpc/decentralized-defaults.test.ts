@@ -241,6 +241,59 @@ describe('decentralized-defaults', () => {
     });
   });
 
+  describe('broken endpoint exclusion', () => {
+    const BROKEN_ENDPOINTS = [
+      'polygon-rpc.com',
+      'rpc.ankr.com/polygon',
+      'rpc.ankr.com/eth',
+      'rpc.ankr.com/arbitrum',
+      'rpc.ankr.com/optimism',
+      'rpc.ankr.com/base',
+      'lava.build',
+      'pokt.network',
+    ];
+
+    it('should not contain any known broken endpoints', () => {
+      const config = getDecentralizedRpcConfig();
+      for (const [chainId, chainConfig] of Object.entries(config.chains)) {
+        for (const endpoint of chainConfig.endpoints) {
+          for (const broken of BROKEN_ENDPOINTS) {
+            expect(endpoint.url, `Chain ${chainId} has broken endpoint ${broken}`).not.toContain(broken);
+          }
+        }
+      }
+    });
+
+    it('should not use polygon-rpc.com (returns 401)', () => {
+      const config = getChainRpcConfig(137);
+      const urls = config!.endpoints.map(e => e.url);
+      expect(urls).not.toContain('https://polygon-rpc.com');
+    });
+
+    it('should not use rpc.ankr.com (auth-gated free tier)', () => {
+      const config = getDecentralizedRpcConfig();
+      for (const [, chainConfig] of Object.entries(config.chains)) {
+        for (const endpoint of chainConfig.endpoints) {
+          expect(endpoint.url).not.toContain('rpc.ankr.com');
+        }
+      }
+    });
+  });
+
+  describe('replacement endpoints', () => {
+    it('should include 1RPC (Automata) endpoints for supported chains', () => {
+      const config = getDecentralizedRpcConfig();
+      const allUrls = Object.values(config.chains).flatMap(c => c.endpoints.map(e => e.url));
+      const has1rpc = allUrls.some(url => url.includes('1rpc.io'));
+      expect(has1rpc).toBe(true);
+    });
+
+    it('should have at least 3 fallback endpoints for Polygon', () => {
+      const config = getChainRpcConfig(137);
+      expect(config!.endpoints.length).toBeGreaterThanOrEqual(4);
+    });
+  });
+
   describe('chain config completeness', () => {
     it('should configure totalOperationTimeoutMs for each chain', () => {
       for (const chainId of SUPPORTED_CHAIN_IDS) {

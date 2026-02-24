@@ -7,10 +7,10 @@
   "endpoints": {
     "http": [
       "https://polygon-pokt.nodies.app",
-      "https://polygon-rpc.com",
       "https://polygon-bor-rpc.publicnode.com",
-      "https://rpc.ankr.com/polygon",
-      "https://polygon.llamarpc.com"
+      "https://polygon.llamarpc.com",
+      "https://1rpc.io/matic",
+      "https://polygon.drpc.org"
     ],
     "ws": [
       "wss://polygon-mainnet.public.blastapi.io",

@@ -6,7 +6,7 @@ describe('build-assertions', () => {
     it('should pass for clean content', () => {
       const clean = `
         const url = "https://eth-pokt.nodies.app";
-        const rpc = "https://polygon-rpc.com";
+        const rpc = "https://polygon-bor-rpc.publicnode.com";
       `;
       expect(() => assertNoBundledSecrets(clean)).not.toThrow();
     });
@@ -34,11 +34,11 @@ describe('build-assertions', () => {
     it('should not false-positive on known public endpoints', () => {
       const safe = `
         "https://eth-pokt.nodies.app"
-        "https://polygon-rpc.com"
+        "https://polygon-bor-rpc.publicnode.com"
         "https://arb1.arbitrum.io/rpc"
         "https://ethereum-rpc.publicnode.com"
         "https://eth.llamarpc.com"
-        "https://rpc.ankr.com/eth"
+        "https://1rpc.io/eth"
         "https://cloudflare-eth.com"
         "wss://eth-mainnet.public.blastapi.io"
         "https://ethereum-sepolia.blockpi.network/v1/rpc/public"

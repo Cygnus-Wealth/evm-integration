@@ -62,7 +62,7 @@ export class EnhancedWebSocketProvider {
       httpUrls: [
         'https://ethereum-rpc.publicnode.com',
         'https://eth.public-rpc.com',
-        'https://rpc.ankr.com/eth'
+        'https://1rpc.io/eth'
       ]
     },
     { 
@@ -75,8 +75,8 @@ export class EnhancedWebSocketProvider {
       ],
       httpUrls: [
         'https://polygon-bor-rpc.publicnode.com',
-        'https://polygon-rpc.com',
-        'https://rpc.ankr.com/polygon'
+        'https://polygon.llamarpc.com',
+        'https://1rpc.io/matic'
       ]
     },
     { 
@@ -90,7 +90,7 @@ export class EnhancedWebSocketProvider {
       httpUrls: [
         'https://arb1.arbitrum.io/rpc',
         'https://arbitrum-one-rpc.publicnode.com',
-        'https://rpc.ankr.com/arbitrum'
+        'https://1rpc.io/arb'
       ]
     },
     { 
@@ -104,7 +104,7 @@ export class EnhancedWebSocketProvider {
       httpUrls: [
         'https://optimism-rpc.publicnode.com',
         'https://mainnet.optimism.io',
-        'https://rpc.ankr.com/optimism'
+        'https://1rpc.io/op'
       ]
     },
     { 
@@ -118,7 +118,7 @@ export class EnhancedWebSocketProvider {
       httpUrls: [
         'https://mainnet.base.org',
         'https://base-rpc.publicnode.com',
-        'https://rpc.ankr.com/base'
+        'https://1rpc.io/base'
       ]
     },
     { 
@@ -128,12 +128,12 @@ export class EnhancedWebSocketProvider {
       wsUrls: [
         'wss://bsc-rpc.publicnode.com',
         'wss://bsc-mainnet.public.blastapi.io',
-        'wss://rpc.ankr.com/bsc/ws'
+        'wss://bsc.blockpi.network/v1/ws/public'
       ],
       httpUrls: [
         'https://bsc-rpc.publicnode.com',
         'https://bsc-dataseed.binance.org',
-        'https://rpc.ankr.com/bsc'
+        'https://1rpc.io/bnb'
       ]
     },
     { 
@@ -143,12 +143,12 @@ export class EnhancedWebSocketProvider {
       wsUrls: [
         'wss://avalanche-c-chain-rpc.publicnode.com',
         'wss://ava-mainnet.public.blastapi.io/ext/bc/C/ws',
-        'wss://rpc.ankr.com/avalanche/ws'
+        'wss://avalanche.blockpi.network/v1/ws/public'
       ],
       httpUrls: [
         'https://avalanche-c-chain-rpc.publicnode.com',
         'https://api.avax.network/ext/bc/C/rpc',
-        'https://rpc.ankr.com/avalanche'
+        'https://1rpc.io/avax/c'
       ]
     }
   ];
