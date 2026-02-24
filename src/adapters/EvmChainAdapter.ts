@@ -15,6 +15,7 @@ import {
   optimism,
   base,
   bsc,
+  avalanche,
   sepolia,
   Chain as ViemChain
 } from 'viem/chains';
@@ -72,6 +73,7 @@ export class EvmChainAdapter implements IChainAdapter {
       case 10: return optimism;
       case 8453: return base;
       case 56: return bsc;
+      case 43114: return avalanche;
       case 11155111: return sepolia;
       default: 
         // Create custom chain for unsupported chains

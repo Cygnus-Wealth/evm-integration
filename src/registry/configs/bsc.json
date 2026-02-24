@@ -1,0 +1,52 @@
+{
+  "id": 56,
+  "name": "BSC",
+  "symbol": "BNB",
+  "decimals": 18,
+  "explorer": "https://bscscan.com",
+  "endpoints": {
+    "http": [
+      "https://bsc-rpc.publicnode.com",
+      "https://bsc-dataseed1.binance.org",
+      "https://bsc-dataseed2.binance.org",
+      "https://rpc.ankr.com/bsc",
+      "https://bsc.llamarpc.com"
+    ],
+    "ws": [
+      "wss://bsc-rpc.publicnode.com",
+      "wss://bsc.blockpi.network/v1/ws/public"
+    ]
+  },
+  "tokens": {
+    "native": {
+      "address": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+      "symbol": "WBNB",
+      "decimals": 18,
+      "name": "Wrapped BNB"
+    },
+    "popular": [
+      {
+        "address": "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
+        "symbol": "USDC",
+        "decimals": 18,
+        "name": "USD Coin"
+      },
+      {
+        "address": "0x55d398326f99059fF775485246999027B3197955",
+        "symbol": "USDT",
+        "decimals": 18,
+        "name": "Tether USD"
+      },
+      {
+        "address": "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3",
+        "symbol": "DAI",
+        "decimals": 18,
+        "name": "Dai Stablecoin"
+      }
+    ]
+  },
+  "rateLimit": {
+    "requestsPerSecond": 50,
+    "burstLimit": 100
+  }
+}

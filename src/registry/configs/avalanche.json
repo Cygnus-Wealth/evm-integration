@@ -1,0 +1,52 @@
+{
+  "id": 43114,
+  "name": "Avalanche",
+  "symbol": "AVAX",
+  "decimals": 18,
+  "explorer": "https://snowtrace.io",
+  "endpoints": {
+    "http": [
+      "https://avax-pokt.nodies.app",
+      "https://api.avax.network/ext/bc/C/rpc",
+      "https://avalanche-c-chain-rpc.publicnode.com",
+      "https://rpc.ankr.com/avalanche",
+      "https://avax.meowrpc.com"
+    ],
+    "ws": [
+      "wss://avalanche-c-chain-rpc.publicnode.com",
+      "wss://avalanche.blockpi.network/v1/ws/public"
+    ]
+  },
+  "tokens": {
+    "native": {
+      "address": "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+      "symbol": "WAVAX",
+      "decimals": 18,
+      "name": "Wrapped AVAX"
+    },
+    "popular": [
+      {
+        "address": "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
+        "symbol": "USDC",
+        "decimals": 6,
+        "name": "USD Coin"
+      },
+      {
+        "address": "0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7",
+        "symbol": "USDT",
+        "decimals": 6,
+        "name": "Tether USD"
+      },
+      {
+        "address": "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70",
+        "symbol": "DAI",
+        "decimals": 18,
+        "name": "Dai Stablecoin"
+      }
+    ]
+  },
+  "rateLimit": {
+    "requestsPerSecond": 50,
+    "burstLimit": 100
+  }
+}
