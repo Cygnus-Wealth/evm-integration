@@ -83,7 +83,7 @@ export const DEFAULT_CHAIN_ENDPOINTS: ChainWsEndpoint[] = [
     httpUrls: [
       'https://ethereum-rpc.publicnode.com',
       'https://eth.public-rpc.com',
-      'https://rpc.ankr.com/eth',
+      'https://1rpc.io/eth',
     ],
   },
   {
@@ -95,8 +95,8 @@ export const DEFAULT_CHAIN_ENDPOINTS: ChainWsEndpoint[] = [
     ],
     httpUrls: [
       'https://polygon-bor-rpc.publicnode.com',
-      'https://polygon-rpc.com',
-      'https://rpc.ankr.com/polygon',
+      'https://polygon.llamarpc.com',
+      'https://1rpc.io/matic',
     ],
   },
   {
@@ -108,7 +108,7 @@ export const DEFAULT_CHAIN_ENDPOINTS: ChainWsEndpoint[] = [
     httpUrls: [
       'https://arb1.arbitrum.io/rpc',
       'https://arbitrum-one-rpc.publicnode.com',
-      'https://rpc.ankr.com/arbitrum',
+      'https://1rpc.io/arb',
     ],
   },
   {
@@ -121,7 +121,7 @@ export const DEFAULT_CHAIN_ENDPOINTS: ChainWsEndpoint[] = [
     httpUrls: [
       'https://optimism-rpc.publicnode.com',
       'https://mainnet.optimism.io',
-      'https://rpc.ankr.com/optimism',
+      'https://1rpc.io/op',
     ],
   },
   {
@@ -133,7 +133,7 @@ export const DEFAULT_CHAIN_ENDPOINTS: ChainWsEndpoint[] = [
     httpUrls: [
       'https://mainnet.base.org',
       'https://base-rpc.publicnode.com',
-      'https://rpc.ankr.com/base',
+      'https://1rpc.io/base',
     ],
   },
   {
@@ -146,7 +146,7 @@ export const DEFAULT_CHAIN_ENDPOINTS: ChainWsEndpoint[] = [
     httpUrls: [
       'https://bsc-rpc.publicnode.com',
       'https://bsc-dataseed.binance.org',
-      'https://rpc.ankr.com/bsc',
+      'https://1rpc.io/bnb',
     ],
   },
   {
@@ -159,7 +159,7 @@ export const DEFAULT_CHAIN_ENDPOINTS: ChainWsEndpoint[] = [
     httpUrls: [
       'https://avalanche-c-chain-rpc.publicnode.com',
       'https://api.avax.network/ext/bc/C/rpc',
-      'https://rpc.ankr.com/avalanche',
+      'https://1rpc.io/avax/c',
     ],
   },
   {
@@ -171,7 +171,7 @@ export const DEFAULT_CHAIN_ENDPOINTS: ChainWsEndpoint[] = [
     httpUrls: [
       'https://fantom-rpc.publicnode.com',
       'https://rpcapi.fantom.network',
-      'https://rpc.ankr.com/fantom',
+      'https://1rpc.io/ftm',
     ],
   },
 ];

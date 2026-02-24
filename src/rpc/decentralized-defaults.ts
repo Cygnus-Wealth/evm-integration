@@ -81,11 +81,11 @@ function ethereumEndpoints(): RpcEndpointConfig[] {
     ),
     // TERTIARY — additional public
     makeEndpoint(
-      'https://rpc.ankr.com/eth',
-      'Ankr',
+      'https://1rpc.io/eth',
+      '1RPC (Automata)',
       RpcProviderRole.TERTIARY,
-      RpcProviderType.PUBLIC,
-      30,
+      RpcProviderType.COMMUNITY,
+      50,
     ),
     makeEndpoint(
       'https://cloudflare-eth.com',
@@ -107,11 +107,11 @@ function polygonEndpoints(): RpcEndpointConfig[] {
       20,
     ),
     makeEndpoint(
-      'https://polygon-rpc.com',
-      'Polygon Official',
+      'https://polygon.llamarpc.com',
+      'LlamaRPC',
       RpcProviderRole.SECONDARY,
-      RpcProviderType.PUBLIC,
-      100,
+      RpcProviderType.COMMUNITY,
+      50,
     ),
     makeEndpoint(
       'https://polygon-bor-rpc.publicnode.com',
@@ -123,15 +123,15 @@ function polygonEndpoints(): RpcEndpointConfig[] {
       'wss://polygon-bor-rpc.publicnode.com',
     ),
     makeEndpoint(
-      'https://rpc.ankr.com/polygon',
-      'Ankr',
+      'https://1rpc.io/matic',
+      '1RPC (Automata)',
       RpcProviderRole.TERTIARY,
-      RpcProviderType.PUBLIC,
-      30,
+      RpcProviderType.COMMUNITY,
+      50,
     ),
     makeEndpoint(
-      'https://polygon.llamarpc.com',
-      'LlamaRPC',
+      'https://polygon.drpc.org',
+      'dRPC',
       RpcProviderRole.TERTIARY,
       RpcProviderType.COMMUNITY,
       50,
@@ -163,11 +163,11 @@ function arbitrumEndpoints(): RpcEndpointConfig[] {
       50,
     ),
     makeEndpoint(
-      'https://rpc.ankr.com/arbitrum',
-      'Ankr',
+      'https://1rpc.io/arb',
+      '1RPC (Automata)',
       RpcProviderRole.TERTIARY,
-      RpcProviderType.PUBLIC,
-      30,
+      RpcProviderType.COMMUNITY,
+      50,
     ),
   ];
 }
@@ -198,11 +198,11 @@ function optimismEndpoints(): RpcEndpointConfig[] {
       'wss://optimism-rpc.publicnode.com',
     ),
     makeEndpoint(
-      'https://rpc.ankr.com/optimism',
-      'Ankr',
+      'https://1rpc.io/op',
+      '1RPC (Automata)',
       RpcProviderRole.TERTIARY,
-      RpcProviderType.PUBLIC,
-      30,
+      RpcProviderType.COMMUNITY,
+      50,
     ),
   ];
 }
@@ -225,11 +225,11 @@ function baseEndpoints(): RpcEndpointConfig[] {
       50,
     ),
     makeEndpoint(
-      'https://rpc.ankr.com/base',
-      'Ankr',
+      'https://1rpc.io/base',
+      '1RPC (Automata)',
       RpcProviderRole.TERTIARY,
-      RpcProviderType.PUBLIC,
-      30,
+      RpcProviderType.COMMUNITY,
+      50,
     ),
   ];
 }

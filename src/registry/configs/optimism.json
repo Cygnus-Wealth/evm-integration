@@ -9,7 +9,7 @@
       "https://op-pokt.nodies.app",
       "https://mainnet.optimism.io",
       "https://optimism-rpc.publicnode.com",
-      "https://rpc.ankr.com/optimism"
+      "https://1rpc.io/op"
     ],
     "ws": [
       "wss://optimism-mainnet.public.blastapi.io",

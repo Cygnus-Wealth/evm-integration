@@ -14,7 +14,7 @@ const defaultRpcEndpoints: Record<number, { http: string; ws?: string }> = {
     ws: 'wss://eth-mainnet.public.blastapi.io'  // Working WebSocket
   },
   137: { 
-    http: 'https://polygon-rpc.com',
+    http: 'https://polygon-bor-rpc.publicnode.com',
     ws: 'wss://polygon-mainnet.public.blastapi.io'  // Working WebSocket
   },
   42161: { 
