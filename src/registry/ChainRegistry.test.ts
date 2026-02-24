@@ -21,6 +21,8 @@ describe('ChainRegistry', () => {
       expect(chainIds).toContain(42161);   // Arbitrum
       expect(chainIds).toContain(10);      // Optimism
       expect(chainIds).toContain(8453);    // Base
+      expect(chainIds).toContain(56);      // BSC
+      expect(chainIds).toContain(43114);   // Avalanche
       expect(chainIds).not.toContain(11155111); // Sepolia excluded
     });
 
@@ -101,8 +103,8 @@ describe('ChainRegistry', () => {
       registry = new ChainRegistry();
       const chains = registry.getSupportedChains();
 
-      expect(chains.length).toBe(5); // 5 mainnet chains
-      expect(chains.map(c => c.id).sort((a, b) => a - b)).toEqual([1, 10, 137, 8453, 42161]);
+      expect(chains.length).toBe(7); // 7 mainnet chains
+      expect(chains.map(c => c.id).sort((a, b) => a - b)).toEqual([1, 10, 56, 137, 8453, 42161, 43114]);
     });
   });
 });

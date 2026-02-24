@@ -4,6 +4,8 @@ import polygonConfig from './configs/polygon.json';
 import arbitrumConfig from './configs/arbitrum.json';
 import optimismConfig from './configs/optimism.json';
 import baseConfig from './configs/base.json';
+import bscConfig from './configs/bsc.json';
+import avalancheConfig from './configs/avalanche.json';
 
 describe('chain configs: decentralized-first endpoints', () => {
   const configs = [
@@ -11,6 +13,7 @@ describe('chain configs: decentralized-first endpoints', () => {
     { name: 'Polygon', config: polygonConfig, poktDomain: 'polygon-pokt.nodies.app' },
     { name: 'Arbitrum', config: arbitrumConfig, poktDomain: 'arb-pokt.nodies.app' },
     { name: 'Optimism', config: optimismConfig, poktDomain: 'op-pokt.nodies.app' },
+    { name: 'Avalanche', config: avalancheConfig, poktDomain: 'avax-pokt.nodies.app' },
   ];
 
   for (const { name, config, poktDomain } of configs) {
@@ -51,6 +54,19 @@ describe('chain configs: decentralized-first endpoints', () => {
 
     it('should not have Alchemy or Infura endpoints', () => {
       for (const url of baseConfig.endpoints.http) {
+        expect(url).not.toContain('alchemy');
+        expect(url).not.toContain('infura');
+      }
+    });
+  });
+
+  describe('BSC (no POKT available)', () => {
+    it('should have public endpoints as primary', () => {
+      expect(bscConfig.endpoints.http.length).toBeGreaterThanOrEqual(3);
+    });
+
+    it('should not have Alchemy or Infura endpoints', () => {
+      for (const url of bscConfig.endpoints.http) {
         expect(url).not.toContain('alchemy');
         expect(url).not.toContain('infura');
       }

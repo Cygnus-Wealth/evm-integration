@@ -8,6 +8,8 @@ import polygonConfig from './configs/polygon.json' with { type: 'json' };
 import arbitrumConfig from './configs/arbitrum.json' with { type: 'json' };
 import optimismConfig from './configs/optimism.json' with { type: 'json' };
 import baseConfig from './configs/base.json' with { type: 'json' };
+import bscConfig from './configs/bsc.json' with { type: 'json' };
+import avalancheConfig from './configs/avalanche.json' with { type: 'json' };
 import sepoliaConfig from './configs/sepolia.json' with { type: 'json' };
 
 export type NetworkEnvironment = 'production' | 'testnet' | 'local';
@@ -23,6 +25,8 @@ export class ChainRegistry {
     [42161, arbitrumConfig as ChainConfig],
     [10, optimismConfig as ChainConfig],
     [8453, baseConfig as ChainConfig],
+    [56, bscConfig as ChainConfig],
+    [43114, avalancheConfig as ChainConfig],
   ]);
 
   private static testnetConfigs: Map<number, ChainConfig> = new Map([
